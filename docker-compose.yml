@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pactery
+      POSTGRES_USER: pactery
+      POSTGRES_PASSWORD: pactery
+    ports:
+      - "5440:5432"
+    volumes:
+      - pactery_pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "4540:4540"
+    environment:
+      DATABASE_URL: postgresql://pactery:pactery@db:5432/pactery?schema=public
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+volumes:
+  pactery_pgdata:

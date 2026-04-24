@@ -1,0 +1,41 @@
+# Pactery - 전자서명 서비스
+
+- **도메인**: pactery.com | **포트**: 4540 | **DB**: PostgreSQL 16 `pactery`
+- **스택**: Nuxt 3 (Vue 3 + Nitro) + Prisma + PostgreSQL + pdf-lib + node-forge
+- **패키지매니저**: pnpm (또는 npm)
+- **레포**: github.com/lawfirmy/pactery
+
+## 컨셉
+
+변호사/법률사무소 특화 전자서명 서비스. eformsign 대체.
+- **완전 독립 프로젝트** — 기존 lawfirmy 인프라에 의존하지 않는 단일 Nuxt 3 풀스택 앱
+- 2가지 핵심 뷰: 서명자 포털(`/my`), 회사 문서함(`/org`)
+- Organization(회사) 중심 구조 — 회사가 결제, 팀원이 사용
+
+## 프로젝트 구조
+
+```
+server/api/auth/        # 인증 (JWT, Google/Kakao OAuth)
+server/api/organizations/  # 조직 CRUD, 멤버, RBAC
+server/api/signatures/  # 서명 수행 (비회원 public 접근)
+server/api/my/          # 서명자 포털 API
+server/utils/           # db, jwt, crypto, rbac, audit, storage, pdf
+pages/org/              # 회사 문서함 (대시보드, 문서, 사건, 의뢰인, 템플릿, 멤버, 설정)
+pages/my/               # 서명자 포털
+pages/sign/[token]      # 서명 수행 (비회원)
+pages/auth/             # 로그인/회원가입
+```
+
+## 코딩 규칙
+
+1. TypeScript strict
+2. Zod로 API 입력 검증
+3. RBAC: requireOrgRole()로 역할 기반 접근 제어
+4. 감사추적: 문서 관련 모든 액션에 createAuditLog()
+5. 모바일 퍼스트 (Tailwind responsive)
+
+## 배포
+
+- CI/CD: `.github/workflows/deploy.yml` → GHCR → EC2
+- 이미지: `ghcr.io/lawfirmy/pactery:latest`
+- EC2 env-file: `/home/ec2-user/servers/pactery/.env`

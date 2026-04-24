@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users ───────────────────────────────────────────
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String?  @map("password_hash")
+  name           String
+  phone          String?
+  avatarUrl      String?  @map("avatar_url")
+  lawyerBarNumber String? @map("lawyer_bar_number")
+  provider       String?  // google, kakao, local
+  providerId     String?  @map("provider_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  orgMembers     OrgMember[]
+  documents      Document[]    @relation("CreatedDocuments")
+  templates      Template[]
+
+  @@map("users")
+}
+
+// ─── Organizations ───────────────────────────────────
+
+model Organization {
+  id              String   @id @default(uuid())
+  name            String
+  businessNumber  String?  @map("business_number")
+  representative  String?
+  logoUrl         String?  @map("logo_url")
+  primaryColor    String?  @map("primary_color") @default("#2563eb")
+  plan            String   @default("free") // free, pro, business, enterprise
+  monthlyQuota    Int      @default(5) @map("monthly_quota")
+  usedQuota       Int      @default(0) @map("used_quota")
+  quotaResetAt    DateTime? @map("quota_reset_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  members         OrgMember[]
+  documents       Document[]
+  cases           Case[]
+  clients         Client[]
+  templates       Template[]
+
+  @@map("organizations")
+}
+
+model OrgMember {
+  id        String    @id @default(uuid())
+  orgId     String    @map("org_id")
+  userId    String    @map("user_id")
+  role      String    @default("member") // owner, admin, member, viewer
+  invitedAt DateTime  @default(now()) @map("invited_at")
+  joinedAt  DateTime? @map("joined_at")
+
+  org  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+  @@map("org_members")
+}
+
+// ─── Documents ───────────────────────────────────────
+
+model Document {
+  id              String    @id @default(uuid())
+  orgId           String    @map("org_id")
+  createdBy       String    @map("created_by")
+  title           String
+  status          String    @default("draft") // draft, pending, partially_signed, completed, rejected, expired
+  memo            String?
+  originalFileKey String?   @map("original_file_key")
+  signedFileKey   String?   @map("signed_file_key")
+  originalHash    String?   @map("original_hash")
+  signedHash      String?   @map("signed_hash")
+  templateId      String?   @map("template_id")
+  caseId          String?   @map("case_id")
+  visibility      String    @default("org_all") // org_all, creator_only, specific_members
+  expiresAt       DateTime? @map("expires_at")
+  completedAt     DateTime? @map("completed_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  org          Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator      User          @relation("CreatedDocuments", fields: [createdBy], references: [id])
+  template     Template?     @relation(fields: [templateId], references: [id])
+  case         Case?         @relation(fields: [caseId], references: [id])
+  signRequests SignRequest[]
+  signFields   SignField[]
+  auditLogs    AuditLog[]
+  tags         DocumentTag[]
+
+  @@index([orgId, status])
+  @@index([orgId, createdAt])
+  @@index([createdBy])
+  @@map("documents")
+}
+
+// ─── Sign Requests ───────────────────────────────────
+
+model SignRequest {
+  id           String    @id @default(uuid())
+  documentId   String    @map("document_id")
+  signerEmail  String    @map("signer_email")
+  signerName   String    @map("signer_name")
+  signerPhone  String?   @map("signer_phone")
+  token        String    @unique @default(uuid())
+  orderIndex   Int       @default(0) @map("order_index")
+  status       String    @default("pending") // pending, signed, rejected
+  signedAt     DateTime? @map("signed_at")
+  ipAddress    String?   @map("ip_address")
+  userAgent    String?   @map("user_agent")
+  geoLocation  String?   @map("geo_location")
+  authMethod   String?   @map("auth_method") // phone, none
+  authCiHash   String?   @map("auth_ci_hash")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  document   Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  signFields SignField[]
+  auditLogs  AuditLog[]
+
+  @@index([documentId])
+  @@index([signerEmail])
+  @@map("sign_requests")
+}
+
+// ─── Sign Fields ─────────────────────────────────────
+
+model SignField {
+  id            String  @id @default(uuid())
+  documentId    String  @map("document_id")
+  signRequestId String? @map("sign_request_id")
+  type          String  @default("signature") // signature, date, text, checkbox, initial
+  page          Int
+  x             Float
+  y             Float
+  width         Float
+  height        Float
+  value         String?
+  required      Boolean @default(true)
+
+  document    Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  signRequest SignRequest? @relation(fields: [signRequestId], references: [id])
+
+  @@index([documentId])
+  @@map("sign_fields")
+}
+
+// ─── Cases (Workspaces) ──────────────────────────────
+
+model Case {
+  id          String   @id @default(uuid())
+  orgId       String   @map("org_id")
+  caseNumber  String?  @map("case_number")
+  title       String
+  description String?
+  clientId    String?  @map("client_id")
+  status      String   @default("active") // active, closed, archived
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  client    Client?      @relation(fields: [clientId], references: [id])
+  documents Document[]
+
+  @@index([orgId])
+  @@index([caseNumber])
+  @@map("cases")
+}
+
+// ─── Clients ─────────────────────────────────────────
+
+model Client {
+  id        String   @id @default(uuid())
+  orgId     String   @map("org_id")
+  name      String
+  email     String?
+  phone     String?
+  company   String?
+  memo      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  cases Case[]
+
+  @@index([orgId])
+  @@index([orgId, name])
+  @@map("clients")
+}
+
+// ─── Audit Logs (append-only) ────────────────────────
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  documentId    String   @map("document_id")
+  signRequestId String?  @map("sign_request_id")
+  eventType     String   @map("event_type") // created, sent, opened, signed, rejected, downloaded, printed
+  actorType     String   @map("actor_type") // system, user, signer
+  actorId       String?  @map("actor_id")
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  geoLocation   String?  @map("geo_location")
+  metadata      Json?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  document    Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  signRequest SignRequest? @relation(fields: [signRequestId], references: [id])
+
+  @@index([documentId])
+  @@index([documentId, eventType])
+  @@map("audit_logs")
+}
+
+// ─── Templates ───────────────────────────────────────
+
+model Template {
+  id          String   @id @default(uuid())
+  orgId       String?  @map("org_id")
+  createdBy   String?  @map("created_by")
+  title       String
+  category    String?  // legal, general, hr, nda
+  description String?
+  fileKey     String?  @map("file_key")
+  fieldsJson  Json?    @map("fields_json")
+  isPreset    Boolean  @default(false) @map("is_preset")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  org       Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator   User?         @relation(fields: [createdBy], references: [id])
+  documents Document[]
+
+  @@index([orgId])
+  @@map("templates")
+}
+
+// ─── Document Tags ───────────────────────────────────
+
+model DocumentTag {
+  id         String @id @default(uuid())
+  documentId String @map("document_id")
+  tag        String
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, tag])
+  @@index([tag])
+  @@map("document_tags")
+}
