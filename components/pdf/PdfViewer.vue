@@ -1,9 +1,9 @@
 <template>
   <div class="pdf-viewer">
     <!-- Toolbar -->
-    <div class="flex items-center justify-between bg-gray-800 text-white px-4 py-2 rounded-t-lg">
-      <div class="flex items-center gap-2">
-        <button @click="prevPage" :disabled="currentPage <= 1" class="px-2 py-1 rounded hover:bg-gray-700 disabled:opacity-30">
+    <div class="flex items-center justify-between bg-gray-800 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-t-lg">
+      <div class="flex items-center gap-1 sm:gap-2">
+        <button @click="prevPage" :disabled="currentPage <= 1" class="min-w-[36px] min-h-[36px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded hover:bg-gray-700 disabled:opacity-30">
           &larr;
         </button>
         <span class="text-sm">
@@ -13,19 +13,19 @@
             type="number"
             min="1"
             :max="totalPages"
-            class="w-12 bg-gray-700 text-center text-sm rounded px-1 py-0.5"
+            class="w-12 bg-gray-700 text-center text-sm rounded px-1 py-1"
           />
           / {{ totalPages }}
         </span>
-        <button @click="nextPage" :disabled="currentPage >= totalPages" class="px-2 py-1 rounded hover:bg-gray-700 disabled:opacity-30">
+        <button @click="nextPage" :disabled="currentPage >= totalPages" class="min-w-[36px] min-h-[36px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded hover:bg-gray-700 disabled:opacity-30">
           &rarr;
         </button>
       </div>
-      <div class="flex items-center gap-2">
-        <button @click="zoomOut" class="px-2 py-1 rounded hover:bg-gray-700 text-sm">-</button>
-        <span class="text-sm w-14 text-center">{{ Math.round(scale * 100) }}%</span>
-        <button @click="zoomIn" class="px-2 py-1 rounded hover:bg-gray-700 text-sm">+</button>
-        <button @click="fitWidth" class="px-2 py-1 rounded hover:bg-gray-700 text-xs">맞춤</button>
+      <div class="flex items-center gap-1 sm:gap-2">
+        <button @click="zoomOut" class="min-w-[36px] min-h-[36px] flex items-center justify-center rounded hover:bg-gray-700 text-sm">-</button>
+        <span class="text-xs sm:text-sm w-12 sm:w-14 text-center">{{ Math.round(scale * 100) }}%</span>
+        <button @click="zoomIn" class="min-w-[36px] min-h-[36px] flex items-center justify-center rounded hover:bg-gray-700 text-sm">+</button>
+        <button @click="fitWidth" class="min-w-[36px] min-h-[36px] flex items-center justify-center rounded hover:bg-gray-700 text-xs">맞춤</button>
       </div>
     </div>
 
@@ -83,6 +83,12 @@ watch(() => props.src, async (src) => {
     state.scale = props.initialScale
     emit('loaded', state.totalPages)
     await renderCurrentPage()
+    // Auto fit-width on mobile
+    nextTick(() => {
+      if (containerRef.value && containerRef.value.clientWidth < 600) {
+        fitWidth()
+      }
+    })
   }
 }, { immediate: true })
 
@@ -124,8 +130,7 @@ function zoomOut() {
 
 function fitWidth() {
   if (!containerRef.value || !state.pdf) return
-  const containerWidth = containerRef.value.clientWidth - 40 // padding
-  // Approximate: assume a standard A4 width of 595 points
+  const containerWidth = containerRef.value.clientWidth - 40
   setScale(containerWidth / 595)
 }
 

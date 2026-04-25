@@ -57,7 +57,7 @@
             <button @click="reupload" class="text-sm text-blue-600 hover:underline">다시 업로드</button>
           </div>
           <ClientOnly>
-            <PdfViewer :src="pdfUrl" height="400px" />
+            <PdfViewer :src="pdfUrl" height="min(400px, 50vh)" />
             <template #fallback>
               <div class="h-96 flex items-center justify-center bg-gray-100">
                 <p class="text-gray-400">PDF 뷰어 로딩 중...</p>
@@ -102,42 +102,42 @@
           <!-- Add signer form -->
           <div class="border-t pt-4">
             <h3 class="text-sm font-medium text-gray-700 mb-3">서명자 추가</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs text-gray-500 mb-1">이름 *</label>
+                <label class="block text-xs text-gray-500 mb-1.5">이름 *</label>
                 <input
                   v-model="newSigner.signerName"
                   type="text"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
                   placeholder="홍길동"
                 />
               </div>
               <div>
-                <label class="block text-xs text-gray-500 mb-1">이메일 *</label>
+                <label class="block text-xs text-gray-500 mb-1.5">이메일 *</label>
                 <input
                   v-model="newSigner.signerEmail"
                   type="email"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
                   placeholder="hong@example.com"
                 />
               </div>
               <div>
-                <label class="block text-xs text-gray-500 mb-1">전화 (선택)</label>
-                <div class="flex gap-2">
-                  <input
-                    v-model="newSigner.signerPhone"
-                    type="tel"
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    placeholder="010-1234-5678"
-                  />
-                  <button
-                    @click="handleAddSigner"
-                    :disabled="!newSigner.signerName || !newSigner.signerEmail"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-40 whitespace-nowrap"
-                  >
-                    추가
-                  </button>
-                </div>
+                <label class="block text-xs text-gray-500 mb-1.5">전화 (선택)</label>
+                <input
+                  v-model="newSigner.signerPhone"
+                  type="tel"
+                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                  placeholder="010-1234-5678"
+                />
+              </div>
+              <div class="flex items-end">
+                <button
+                  @click="handleAddSigner"
+                  :disabled="!newSigner.signerName || !newSigner.signerEmail"
+                  class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-40"
+                >
+                  서명자 추가
+                </button>
               </div>
             </div>
           </div>
@@ -158,7 +158,7 @@
               :pdf-src="pdfUrl"
               v-model="fields"
               :signers="signers"
-              height="550px"
+              height="min(550px, 60vh)"
             />
             <template #fallback>
               <div class="h-96 flex items-center justify-center bg-gray-100">

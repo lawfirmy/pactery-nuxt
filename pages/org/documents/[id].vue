@@ -36,7 +36,7 @@
         <div class="lg:col-span-2">
           <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <ClientOnly>
-              <PdfViewer :src="pdfUrl" height="600px">
+              <PdfViewer :src="pdfUrl" height="min(600px, 60vh)">
                 <template #overlay="{ page, scale }">
                   <FieldOverlay
                     :fields="doc.signFields"

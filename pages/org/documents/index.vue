@@ -1,48 +1,33 @@
 <template>
-  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">문서함</h1>
+  <div class="max-w-7xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-5">
+      <h1 class="text-xl sm:text-2xl font-bold">문서함</h1>
       <button
         @click="showNewDoc = true"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+        class="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
       >
         + 새 문서
       </button>
     </div>
 
     <!-- Search & Filters -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
-      <div class="flex flex-wrap gap-3">
+    <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 mb-5">
+      <div class="flex flex-wrap gap-2 sm:gap-3">
         <input
           v-model="search"
           type="text"
-          placeholder="제목, 서명자, 태그로 검색..."
-          class="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          placeholder="제목, 서명자 검색..."
+          class="flex-1 min-w-[150px] px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
           @keyup.enter="handleSearch"
         />
-        <select v-model="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg">
-          <option value="">전체 상태</option>
+        <select v-model="statusFilter" class="px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+          <option value="">전체</option>
           <option value="draft">초안</option>
           <option value="pending">서명 대기</option>
-          <option value="partially_signed">부분 서명</option>
           <option value="completed">완료</option>
           <option value="rejected">거절</option>
-          <option value="expired">만료</option>
         </select>
-        <input
-          v-model="dateFrom"
-          type="date"
-          class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          title="시작일"
-        />
-        <span class="self-center text-gray-400">~</span>
-        <input
-          v-model="dateTo"
-          type="date"
-          class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          title="종료일"
-        />
-        <button @click="handleSearch" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">
+        <button @click="handleSearch" class="px-4 py-2.5 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">
           검색
         </button>
       </div>
@@ -57,38 +42,33 @@
           :disabled="downloading"
           class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
         >
-          {{ downloading ? '다운로드 중...' : '일괄 다운로드 (ZIP)' }}
+          {{ downloading ? '다운로드 중...' : '일괄 다운로드' }}
         </button>
         <button @click="selectedIds = []" class="px-3 py-1.5 text-gray-600 hover:text-gray-800 text-sm">
-          선택 해제
+          해제
         </button>
       </div>
     </div>
 
-    <!-- Documents Table -->
+    <!-- Documents -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
       <div v-if="loading" class="text-center py-12 text-gray-400">불러오는 중...</div>
 
       <div v-else-if="documents.length === 0" class="text-center py-12 text-gray-400">
-        문서가 없습니다. 첫 문서를 만들어보세요!
+        <p class="text-lg mb-2">문서가 없습니다</p>
+        <p class="text-sm">첫 문서를 만들어보세요!</p>
       </div>
 
-      <table v-else class="w-full">
+      <!-- Desktop Table -->
+      <table v-else class="w-full hidden md:table">
         <thead class="bg-gray-50 border-b">
           <tr>
             <th class="px-4 py-3 w-10">
-              <input
-                type="checkbox"
-                :checked="allSelected"
-                :indeterminate="someSelected && !allSelected"
-                @change="toggleAll"
-                class="rounded border-gray-300"
-              />
+              <input type="checkbox" :checked="allSelected" :indeterminate="someSelected && !allSelected" @change="toggleAll" class="rounded border-gray-300" />
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">제목</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">서명자</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">작성자</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">날짜</th>
           </tr>
         </thead>
@@ -97,52 +77,56 @@
             v-for="doc in documents"
             :key="doc.id"
             class="hover:bg-gray-50 cursor-pointer"
-            :class="{ 'bg-blue-50/50': selectedIds.includes(doc.id) }"
+            @click="navigateTo(`/org/documents/${doc.id}`)"
           >
             <td class="px-4 py-3" @click.stop>
-              <input
-                type="checkbox"
-                :checked="selectedIds.includes(doc.id)"
-                @change="toggleSelect(doc.id)"
-                class="rounded border-gray-300"
-              />
+              <input type="checkbox" :checked="selectedIds.includes(doc.id)" @change="toggleSelect(doc.id)" class="rounded border-gray-300" />
             </td>
-            <td class="px-4 py-3" @click="navigateTo(`/org/documents/${doc.id}`)">
-              <div>
-                <p class="font-medium text-sm">{{ doc.title }}</p>
-                <div v-if="doc.tags?.length" class="flex gap-1 mt-1">
-                  <span
-                    v-for="t in doc.tags"
-                    :key="t.tag"
-                    class="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded"
-                  >
-                    {{ t.tag }}
-                  </span>
-                </div>
-              </div>
+            <td class="px-4 py-3">
+              <p class="font-medium text-sm">{{ doc.title }}</p>
             </td>
-            <td class="px-4 py-3" @click="navigateTo(`/org/documents/${doc.id}`)">
+            <td class="px-4 py-3">
               <div class="flex flex-col gap-0.5">
-                <span
-                  v-for="sr in doc.signRequests"
-                  :key="sr.id"
-                  class="text-xs"
-                  :class="sr.status === 'signed' ? 'text-green-600' : 'text-gray-500'"
-                >
+                <span v-for="sr in doc.signRequests" :key="sr.id" class="text-xs" :class="sr.status === 'signed' ? 'text-green-600' : 'text-gray-500'">
                   {{ sr.signerName }}
                 </span>
               </div>
             </td>
-            <td class="px-4 py-3" @click="navigateTo(`/org/documents/${doc.id}`)">
-              <span :class="statusClass(doc.status)" class="text-xs px-2 py-1 rounded-full">
-                {{ statusLabel(doc.status) }}
-              </span>
+            <td class="px-4 py-3">
+              <span :class="statusClass(doc.status)" class="text-xs px-2 py-1 rounded-full">{{ statusLabel(doc.status) }}</span>
             </td>
-            <td class="px-4 py-3 text-sm text-gray-500" @click="navigateTo(`/org/documents/${doc.id}`)">{{ doc.creator?.name }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500" @click="navigateTo(`/org/documents/${doc.id}`)">{{ formatDate(doc.createdAt) }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(doc.createdAt) }}</td>
           </tr>
         </tbody>
       </table>
+
+      <!-- Mobile Card View -->
+      <div v-if="documents.length > 0" class="md:hidden divide-y">
+        <div
+          v-for="doc in documents"
+          :key="doc.id"
+          class="p-4 hover:bg-gray-50 active:bg-gray-100 cursor-pointer"
+          @click="navigateTo(`/org/documents/${doc.id}`)"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-sm truncate">{{ doc.title }}</p>
+              <div class="flex items-center gap-2 mt-1.5">
+                <span :class="statusClass(doc.status)" class="text-xs px-2 py-0.5 rounded-full">{{ statusLabel(doc.status) }}</span>
+                <span class="text-xs text-gray-400">{{ formatDate(doc.createdAt) }}</span>
+              </div>
+              <div v-if="doc.signRequests?.length" class="flex flex-wrap gap-1 mt-1.5">
+                <span v-for="sr in doc.signRequests" :key="sr.id" class="text-xs text-gray-500">
+                  {{ sr.signerName }}
+                </span>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-gray-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </div>
 
       <!-- Pagination -->
       <div v-if="pagination && pagination.totalPages > 1" class="flex justify-center gap-2 p-4 border-t">
@@ -151,7 +135,7 @@
           :key="p"
           @click="page = p; loadDocuments()"
           :class="[
-            'w-8 h-8 rounded text-sm',
+            'min-w-[40px] min-h-[40px] rounded text-sm flex items-center justify-center',
             p === page ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200',
           ]"
         >
@@ -161,33 +145,34 @@
     </div>
 
     <!-- New Document Modal -->
-    <div v-if="showNewDoc" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click.self="showNewDoc = false">
-      <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+    <div v-if="showNewDoc" class="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50" @click.self="showNewDoc = false">
+      <div class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl p-6 w-full sm:max-w-md">
         <h2 class="text-lg font-semibold mb-4">새 문서 만들기</h2>
         <form @submit.prevent="createNewDocument" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">문서 제목</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">문서 제목</label>
             <input
               v-model="newDoc.title"
               type="text"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
               placeholder="예: 수임계약서 - 홍길동"
+              autofocus
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">메모 (선택)</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">메모 (선택)</label>
             <textarea
               v-model="newDoc.memo"
               rows="2"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
             ></textarea>
           </div>
-          <div class="flex justify-end gap-3">
-            <button type="button" @click="showNewDoc = false" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+          <div class="flex gap-3 pt-2">
+            <button type="button" @click="showNewDoc = false" class="flex-1 px-4 py-2.5 border rounded-lg text-sm hover:bg-gray-50">
               취소
             </button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button type="submit" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
               생성
             </button>
           </div>
@@ -204,8 +189,6 @@ const { fetchDocuments, createDocument, orgFetch } = useOrganization()
 
 const search = ref('')
 const statusFilter = ref('')
-const dateFrom = ref('')
-const dateTo = ref('')
 const page = ref(1)
 const loading = ref(true)
 const documents = ref<any[]>([])
@@ -226,8 +209,6 @@ async function loadDocuments() {
     const params: Record<string, any> = { page: page.value }
     if (search.value) params.search = search.value
     if (statusFilter.value) params.status = statusFilter.value
-    if (dateFrom.value) params.dateFrom = dateFrom.value
-    if (dateTo.value) params.dateTo = dateTo.value
 
     const data = await fetchDocuments(params)
     documents.value = data.documents

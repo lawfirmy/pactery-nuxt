@@ -7,9 +7,9 @@
       <p class="text-gray-400 mt-2">링크가 유효하지 않거나 이미 서명이 완료되었습니다.</p>
     </div>
 
-    <div v-else-if="signData" class="max-w-4xl mx-auto">
+    <div v-else-if="signData" class="max-w-4xl mx-auto px-4 sm:px-0">
       <!-- Header -->
-      <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
+      <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 mb-4">
         <div class="flex items-center gap-3 mb-4">
           <div v-if="signData.document.org.logoUrl" class="w-10 h-10 rounded-full overflow-hidden">
             <img :src="signData.document.org.logoUrl" class="w-full h-full object-cover" />
@@ -27,7 +27,7 @@
       <!-- PDF Viewer with field overlays -->
       <div class="bg-white rounded-xl shadow-sm mb-4 overflow-hidden">
         <ClientOnly>
-          <PdfViewer :src="pdfUrl" height="500px" ref="pdfViewerRef">
+          <PdfViewer :src="pdfUrl" height="min(500px, 55vh)" ref="pdfViewerRef">
             <template #overlay="{ page, scale }">
               <FieldOverlay
                 :fields="signData.fields"
@@ -43,8 +43,8 @@
       </div>
 
       <!-- Signature area -->
-      <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
-        <h2 class="text-lg font-semibold mb-4">서명하기</h2>
+      <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 mb-4">
+        <h2 class="text-lg font-semibold mb-3">서명하기</h2>
         <p class="text-sm text-gray-500 mb-4">
           서명 필드 {{ signedFieldCount }}/{{ totalFieldCount }}개 완료
         </p>
@@ -52,17 +52,17 @@
       </div>
 
       <!-- Submit -->
-      <div class="flex justify-end gap-3 mb-8">
+      <div class="flex flex-col sm:flex-row justify-end gap-3 mb-8">
         <button
           @click="handleReject"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm order-2 sm:order-1"
         >
           서명 거절
         </button>
         <button
           @click="handleSign"
           :disabled="submitting || !allFieldsSigned"
-          class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-medium order-1 sm:order-2"
         >
           {{ submitting ? '처리 중...' : '서명 제출' }}
         </button>

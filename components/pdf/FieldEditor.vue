@@ -1,41 +1,34 @@
 <template>
   <div class="field-editor">
     <!-- Field palette -->
-    <div class="flex items-center gap-2 bg-white border-b px-4 py-2">
-      <span class="text-sm text-gray-500 mr-2">필드 추가:</span>
+    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-white border-b px-3 py-2 sm:px-4">
+      <span class="text-xs sm:text-sm text-gray-500 mr-1 hidden sm:inline">필드 추가:</span>
       <button
         v-for="ft in fieldTypes"
         :key="ft.type"
         @click="addField(ft.type)"
-        class="flex items-center gap-1 px-3 py-1.5 text-xs border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition"
+        class="flex items-center gap-1 px-2.5 py-2 sm:px-3 sm:py-1.5 text-xs border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition"
         :class="{ 'ring-2 ring-blue-400': selectedFieldType === ft.type }"
       >
         <span>{{ ft.icon }}</span>
-        <span>{{ ft.label }}</span>
-      </button>
-      <button
-        @click="$emit('aiDetect')"
-        class="flex items-center gap-1 px-3 py-1.5 text-xs border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition ml-2"
-      >
-        <span>&#x2728;</span>
-        <span>AI 자동감지</span>
+        <span class="hidden sm:inline">{{ ft.label }}</span>
       </button>
       <div class="flex-1"></div>
-      <div v-if="selectedField" class="flex items-center gap-2">
+      <div v-if="selectedField" class="flex items-center gap-1.5 sm:gap-2">
         <select
           v-model="selectedField.signRequestId"
-          class="text-xs border rounded px-2 py-1"
+          class="text-xs border rounded px-2 py-1.5 max-w-[100px] sm:max-w-none"
         >
-          <option :value="undefined">서명자 미지정</option>
+          <option :value="undefined">미지정</option>
           <option v-for="sr in signers" :key="sr.id" :value="sr.id">
             {{ sr.signerName }}
           </option>
         </select>
-        <label class="flex items-center gap-1 text-xs">
+        <label class="hidden sm:flex items-center gap-1 text-xs">
           <input type="checkbox" v-model="selectedField.required" />
           필수
         </label>
-        <button @click="removeField(selectedField.id)" class="text-xs text-red-500 hover:text-red-700 ml-2">
+        <button @click="removeField(selectedField.id)" class="text-xs text-red-500 hover:text-red-700 px-1">
           삭제
         </button>
       </div>
@@ -54,6 +47,7 @@
           class="absolute inset-0"
           @click.self="deselectField"
           @mousedown.self="handleCanvasMouseDown($event, page, scale)"
+          @touchstart.self.prevent="handleCanvasTouchStart($event, page, scale)"
         >
           <div
             v-for="field in fieldsOnPage(page)"
@@ -62,6 +56,7 @@
             :class="fieldClasses(field)"
             :style="fieldStyle(field, scale)"
             @mousedown.stop="startDrag($event, field, scale)"
+            @touchstart.stop.prevent="startTouchDrag($event, field, scale)"
             @click.stop="selectField(field)"
           >
             <!-- Field label -->
@@ -77,8 +72,9 @@
             <!-- Resize handle -->
             <div
               v-if="selectedField?.id === field.id"
-              class="absolute -right-1 -bottom-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-se-resize"
+              class="absolute -right-1 -bottom-1 w-5 h-5 sm:w-3 sm:h-3 bg-white border-2 border-blue-500 rounded-sm cursor-se-resize"
               @mousedown.stop="startResize($event, field, scale)"
+              @touchstart.stop.prevent="startTouchResize($event, field, scale)"
             ></div>
           </div>
         </div>
@@ -181,24 +177,11 @@ function removeField(id: string) {
   if (selectedField.value?.id === id) selectedField.value = null
 }
 
+// --- Mouse events ---
+
 function handleCanvasMouseDown(e: MouseEvent, page: number, scale: number) {
   if (!selectedFieldType.value) return
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-  const size = defaultSizes[selectedFieldType.value] || { w: 150, h: 50 }
-  const newField: SignField = {
-    id: crypto.randomUUID(),
-    type: selectedFieldType.value as SignField['type'],
-    page,
-    x: (e.clientX - rect.left) / scale,
-    y: (e.clientY - rect.top) / scale,
-    width: size.w,
-    height: size.h,
-    required: true,
-    signRequestId: props.signers?.[0]?.id,
-  }
-  fields.value.push(newField)
-  selectedField.value = newField
-  selectedFieldType.value = ''
+  placeFieldAt(e.clientX, e.clientY, e.currentTarget as HTMLElement, page, scale)
 }
 
 function startDrag(e: MouseEvent, field: SignField, scale: number) {
@@ -254,6 +237,96 @@ function startResize(e: MouseEvent, field: SignField, scale: number) {
 
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', onUp)
+}
+
+// --- Touch events ---
+
+function handleCanvasTouchStart(e: TouchEvent, page: number, scale: number) {
+  if (!selectedFieldType.value) return
+  const touch = e.touches[0]
+  placeFieldAt(touch.clientX, touch.clientY, e.currentTarget as HTMLElement, page, scale)
+}
+
+function startTouchDrag(e: TouchEvent, field: SignField, scale: number) {
+  selectedField.value = field
+  const touch = e.touches[0]
+  dragState.value = {
+    field,
+    startX: touch.clientX,
+    startY: touch.clientY,
+    fieldStartX: field.x,
+    fieldStartY: field.y,
+  }
+
+  const onMove = (ev: TouchEvent) => {
+    ev.preventDefault()
+    if (!dragState.value) return
+    const t = ev.touches[0]
+    const dx = (t.clientX - dragState.value.startX) / scale
+    const dy = (t.clientY - dragState.value.startY) / scale
+    dragState.value.field.x = Math.max(0, dragState.value.fieldStartX + dx)
+    dragState.value.field.y = Math.max(0, dragState.value.fieldStartY + dy)
+  }
+
+  const onEnd = () => {
+    dragState.value = null
+    window.removeEventListener('touchmove', onMove)
+    window.removeEventListener('touchend', onEnd)
+  }
+
+  window.addEventListener('touchmove', onMove, { passive: false })
+  window.addEventListener('touchend', onEnd)
+}
+
+function startTouchResize(e: TouchEvent, field: SignField, scale: number) {
+  const touch = e.touches[0]
+  resizeState.value = {
+    field,
+    startX: touch.clientX,
+    startY: touch.clientY,
+    startW: field.width,
+    startH: field.height,
+  }
+
+  const onMove = (ev: TouchEvent) => {
+    ev.preventDefault()
+    if (!resizeState.value) return
+    const t = ev.touches[0]
+    const dx = (t.clientX - resizeState.value.startX) / scale
+    const dy = (t.clientY - resizeState.value.startY) / scale
+    resizeState.value.field.width = Math.max(20, resizeState.value.startW + dx)
+    resizeState.value.field.height = Math.max(15, resizeState.value.startH + dy)
+  }
+
+  const onEnd = () => {
+    resizeState.value = null
+    window.removeEventListener('touchmove', onMove)
+    window.removeEventListener('touchend', onEnd)
+  }
+
+  window.addEventListener('touchmove', onMove, { passive: false })
+  window.addEventListener('touchend', onEnd)
+}
+
+// --- Common ---
+
+function placeFieldAt(clientX: number, clientY: number, el: HTMLElement, page: number, scale: number) {
+  const rect = el.getBoundingClientRect()
+  const size = defaultSizes[selectedFieldType.value] || { w: 150, h: 50 }
+  const newField: SignField = {
+    id: crypto.randomUUID(),
+    type: selectedFieldType.value as SignField['type'],
+    page,
+    x: (clientX - rect.left) / scale,
+    y: (clientY - rect.top) / scale,
+    width: size.w,
+    height: size.h,
+    required: true,
+    signRequestId: props.signers?.[0]?.id,
+  }
+  fields.value.push(newField)
+  selectedField.value = newField
+  selectedFieldType.value = ''
 }
 
 function fieldStyle(field: SignField, scale: number) {

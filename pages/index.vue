@@ -65,7 +65,7 @@
     <section class="bg-white py-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">합리적인 가격</h2>
-        <div class="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
           <div class="border rounded-xl p-6">
             <h3 class="font-semibold text-lg">Free</h3>
             <p class="text-3xl font-bold mt-2">0<span class="text-base font-normal text-gray-500">원/월</span></p>
