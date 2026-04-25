@@ -6,7 +6,8 @@
           <div class="flex items-center gap-8">
             <NuxtLink to="/" class="text-xl font-bold text-blue-600">Pactery</NuxtLink>
             <template v-if="isLoggedIn">
-              <NuxtLink to="/org" class="text-sm text-gray-600 hover:text-gray-900">문서함</NuxtLink>
+              <NuxtLink to="/org" class="text-sm text-gray-600 hover:text-gray-900">대시보드</NuxtLink>
+              <NuxtLink to="/org/documents" class="text-sm text-gray-600 hover:text-gray-900">문서함</NuxtLink>
               <NuxtLink to="/org/cases" class="text-sm text-gray-600 hover:text-gray-900">사건관리</NuxtLink>
               <NuxtLink to="/org/clients" class="text-sm text-gray-600 hover:text-gray-900">의뢰인</NuxtLink>
               <NuxtLink to="/org/templates" class="text-sm text-gray-600 hover:text-gray-900">템플릿</NuxtLink>
@@ -17,6 +18,7 @@
               <div v-if="currentOrg" class="text-sm text-gray-500">
                 {{ currentOrg.name }}
               </div>
+              <NuxtLink to="/org/settings" class="text-sm text-gray-600 hover:text-gray-900">설정</NuxtLink>
               <NuxtLink to="/my" class="text-sm text-gray-600 hover:text-gray-900">내 서명</NuxtLink>
               <button @click="logout" class="text-sm text-gray-500 hover:text-gray-700">로그아웃</button>
             </template>
@@ -40,7 +42,7 @@
 <script setup lang="ts">
 const { isLoggedIn, currentOrg, logout, initAuth } = useAuth()
 
-onMounted(() => {
-  initAuth()
+onMounted(async () => {
+  await initAuth()
 })
 </script>

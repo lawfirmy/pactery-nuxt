@@ -286,7 +286,7 @@ async function createNewDocument() {
     showNewDoc.value = false
     newDoc.title = ''
     newDoc.memo = ''
-    navigateTo(`/org/documents/${doc.id}`)
+    navigateTo(`/org/documents/${doc.id}/edit`)
   } catch (e: any) {
     alert(e.data?.statusMessage || '문서 생성 실패')
   }

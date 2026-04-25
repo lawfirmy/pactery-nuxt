@@ -8,7 +8,6 @@ const registerSchema = z.object({
   password: z.string().min(8),
   name: z.string().min(1).max(50),
   phone: z.string().optional(),
-  lawyerBarNumber: z.string().optional(),
 })
 
 export default defineEventHandler(async (event) => {
@@ -29,7 +28,6 @@ export default defineEventHandler(async (event) => {
         passwordHash,
         name: body.name,
         phone: body.phone,
-        lawyerBarNumber: body.lawyerBarNumber,
         provider: 'local',
       },
     })

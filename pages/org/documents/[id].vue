@@ -15,7 +15,14 @@
           </div>
         </div>
         <div class="flex gap-2">
-          <a :href="`/api/documents/${doc.id}/download`" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+          <NuxtLink
+            v-if="doc.status === 'draft'"
+            :to="`/org/documents/${doc.id}/edit`"
+            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+          >
+            편집
+          </NuxtLink>
+          <a v-if="doc.originalFileKey" :href="`/api/documents/${doc.id}/download`" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
             PDF 다운로드
           </a>
           <a :href="`/api/documents/${doc.id}/audit-trail`" class="px-4 py-2 border text-sm rounded-lg hover:bg-gray-50">
@@ -33,7 +40,7 @@
                 <template #overlay="{ page, scale }">
                   <FieldOverlay
                     :fields="doc.signFields"
-                    :page="page - 1"
+                    :page="page"
                     :scale="scale"
                   />
                 </template>
@@ -138,12 +145,12 @@ useHead({ title: '문서 상세 - Pactery' })
 
 const route = useRoute()
 const docId = route.params.id as string
-const { fetchDocument } = useOrganization()
+const { fetchDocument, getPdfUrl } = useOrganization()
 
 const loading = ref(true)
 const doc = ref<any>(null)
 
-const pdfUrl = computed(() => doc.value ? `/api/documents/${doc.value.id}/pdf` : null)
+const pdfUrl = computed(() => doc.value?.originalFileKey ? getPdfUrl(docId) : null)
 
 onMounted(async () => {
   try {

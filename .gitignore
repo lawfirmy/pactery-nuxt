@@ -25,6 +25,9 @@ node_modules
 .DS_Store
 Thumbs.db
 
+# Uploads (local dev storage)
+.uploads
+
 # Prisma
 prisma/*.db
 prisma/migrations/**/migration_lock.toml

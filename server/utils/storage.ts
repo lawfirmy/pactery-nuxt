@@ -1,6 +1,37 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { v4 as uuidv4 } from 'uuid'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
+
+const UPLOADS_DIR = path.join(process.cwd(), '.uploads')
+
+function useLocalStorage(): boolean {
+  const config = useRuntimeConfig()
+  return !config.s3Bucket
+}
+
+// ─── Local Storage ──────────────────────────────────
+
+async function localUpload(buffer: Buffer, _contentType: string, folder: string): Promise<string> {
+  const key = `${folder}/${uuidv4()}.pdf`
+  const filePath = path.join(UPLOADS_DIR, key)
+  await fs.mkdir(path.dirname(filePath), { recursive: true })
+  await fs.writeFile(filePath, buffer)
+  return key
+}
+
+async function localGetFile(key: string): Promise<Buffer> {
+  const filePath = path.join(UPLOADS_DIR, key)
+  return fs.readFile(filePath)
+}
+
+async function localDelete(key: string): Promise<void> {
+  const filePath = path.join(UPLOADS_DIR, key)
+  await fs.unlink(filePath).catch(() => {})
+}
+
+// ─── S3 Storage ─────────────────────────────────────
 
 let s3Client: S3Client | null = null
 
@@ -18,12 +49,15 @@ function getS3Client(): S3Client {
   return s3Client
 }
 
-/** Upload a file to S3 */
+// ─── Public API ─────────────────────────────────────
+
 export async function uploadFile(
   buffer: Buffer,
   contentType: string,
   folder: string = 'documents',
 ): Promise<string> {
+  if (useLocalStorage()) return localUpload(buffer, contentType, folder)
+
   const config = useRuntimeConfig()
   const key = `${folder}/${uuidv4()}`
 
@@ -38,8 +72,9 @@ export async function uploadFile(
   return key
 }
 
-/** Get a file from S3 */
 export async function getFile(key: string): Promise<Buffer> {
+  if (useLocalStorage()) return localGetFile(key)
+
   const config = useRuntimeConfig()
   const response = await getS3Client().send(new GetObjectCommand({
     Bucket: config.s3Bucket,
@@ -57,8 +92,9 @@ export async function getFile(key: string): Promise<Buffer> {
   return Buffer.concat(chunks)
 }
 
-/** Generate a presigned URL for download */
 export async function getPresignedUrl(key: string, expiresIn = 3600): Promise<string> {
+  if (useLocalStorage()) return `/api/files/${key}`
+
   const config = useRuntimeConfig()
   return getSignedUrl(
     getS3Client(),
@@ -67,8 +103,9 @@ export async function getPresignedUrl(key: string, expiresIn = 3600): Promise<st
   )
 }
 
-/** Delete a file from S3 */
 export async function deleteFile(key: string): Promise<void> {
+  if (useLocalStorage()) return localDelete(key)
+
   const config = useRuntimeConfig()
   await getS3Client().send(new DeleteObjectCommand({
     Bucket: config.s3Bucket,

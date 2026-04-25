@@ -47,16 +47,6 @@
         />
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">변호사 등록번호 (선택)</label>
-        <input
-          v-model="form.lawyerBarNumber"
-          type="text"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="변호사인 경우 입력"
-        />
-      </div>
-
       <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
 
       <button
@@ -91,7 +81,6 @@ const form = reactive({
   email: '',
   password: '',
   phone: '',
-  lawyerBarNumber: '',
 })
 const loading = ref(false)
 const error = ref('')
@@ -106,7 +95,6 @@ async function handleRegister() {
       body: {
         ...form,
         phone: form.phone || undefined,
-        lawyerBarNumber: form.lawyerBarNumber || undefined,
       },
     })
     setAuth({

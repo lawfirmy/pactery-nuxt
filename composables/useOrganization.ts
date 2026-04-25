@@ -1,9 +1,10 @@
 export const useOrganization = () => {
-  const { state, authFetch } = useAuth()
+  const { state, authFetch, waitForAuth } = useAuth()
 
   const orgId = computed(() => state.value.currentOrgId)
 
-  function orgFetch<T>(path: string, opts: any = {}): Promise<T> {
+  async function orgFetch<T>(path: string, opts: any = {}): Promise<T> {
+    if (!orgId.value) await waitForAuth()
     if (!orgId.value) throw new Error('No organization selected')
     return authFetch<T>(`/api/organizations/${orgId.value}${path}`, opts)
   }
@@ -47,6 +48,39 @@ export const useOrganization = () => {
     return orgFetch<any>('/templates')
   }
 
+  async function addSigner(docId: string, data: { signerName: string; signerEmail: string; signerPhone?: string }) {
+    return orgFetch<any>(`/documents/${docId}/signers`, { method: 'POST', body: data })
+  }
+
+  async function removeSigner(docId: string, signRequestId: string) {
+    return orgFetch<any>(`/documents/${docId}/signers/${signRequestId}`, { method: 'DELETE' })
+  }
+
+  async function uploadDocumentPdf(docId: string, file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    if (!orgId.value) await waitForAuth()
+    if (!orgId.value) throw new Error('No organization selected')
+    return $fetch<any>(`/api/organizations/${orgId.value}/documents/${docId}/upload`, {
+      method: 'POST',
+      body: formData,
+      headers: { Authorization: `Bearer ${state.value.token}` },
+    })
+  }
+
+  async function saveFields(docId: string, fields: any[]) {
+    return orgFetch<any>(`/documents/${docId}/fields`, { method: 'PUT', body: { fields } })
+  }
+
+  async function sendDocument(docId: string) {
+    return orgFetch<any>(`/documents/${docId}/send`, { method: 'POST' })
+  }
+
+  function getPdfUrl(docId: string) {
+    if (!orgId.value) return null
+    return `/api/organizations/${orgId.value}/documents/${docId}/pdf`
+  }
+
   return {
     orgId,
     orgFetch,
@@ -59,5 +93,11 @@ export const useOrganization = () => {
     fetchCases,
     fetchClients,
     fetchTemplates,
+    addSigner,
+    removeSigner,
+    uploadDocumentPdf,
+    saveFields,
+    sendDocument,
+    getPdfUrl,
   }
 }

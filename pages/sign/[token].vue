@@ -31,7 +31,7 @@
             <template #overlay="{ page, scale }">
               <FieldOverlay
                 :fields="signData.fields"
-                :page="page - 1"
+                :page="page"
                 :scale="scale"
                 :interactive="true"
                 :highlight-signer-id="signData.id"
@@ -101,7 +101,7 @@ const fieldValues = ref<Record<string, string>>({})
 
 const pdfUrl = computed(() => {
   if (!signData.value?.document?.originalFileKey) return null
-  return `/api/documents/${signData.value.document.id}/pdf`
+  return `/api/documents/${signData.value.document.id}/pdf?token=${token}`
 })
 
 const totalFieldCount = computed(() => signData.value?.fields?.length || 0)

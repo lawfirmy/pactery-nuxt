@@ -22,6 +22,9 @@ interface AuthState {
   currentOrgId: string | null
 }
 
+const authReady = ref(false)
+let authInitPromise: Promise<void> | null = null
+
 export const useAuth = () => {
   const state = useState<AuthState>('auth', () => ({
     token: null,
@@ -70,26 +73,39 @@ export const useAuth = () => {
   }
 
   async function initAuth() {
-    if (import.meta.server) return
+    if (import.meta.server) { authReady.value = true; return }
 
-    const token = localStorage.getItem('pactery_token')
-    if (!token) return
+    if (authInitPromise) return authInitPromise
 
-    state.value.token = token
-    state.value.currentOrgId = localStorage.getItem('pactery_org')
+    authInitPromise = (async () => {
+      const token = localStorage.getItem('pactery_token')
+      if (!token) { authReady.value = true; return }
 
-    try {
-      const data = await $fetch<any>('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      state.value.user = data
-      state.value.organizations = data.organizations || []
-      if (!state.value.currentOrgId && state.value.organizations.length > 0) {
-        state.value.currentOrgId = state.value.organizations[0].id
+      state.value.token = token
+      state.value.currentOrgId = localStorage.getItem('pactery_org')
+
+      try {
+        const data = await $fetch<any>('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        state.value.user = data
+        state.value.organizations = data.organizations || []
+        if (!state.value.currentOrgId && state.value.organizations.length > 0) {
+          state.value.currentOrgId = state.value.organizations[0].id
+        }
+      } catch {
+        logout()
+      } finally {
+        authReady.value = true
       }
-    } catch {
-      logout()
-    }
+    })()
+
+    return authInitPromise
+  }
+
+  async function waitForAuth() {
+    if (authReady.value) return
+    await initAuth()
   }
 
   function authFetch<T>(url: string, opts: any = {}): Promise<T> {
@@ -106,10 +122,12 @@ export const useAuth = () => {
     state,
     isLoggedIn,
     currentOrg,
+    authReady,
     setAuth,
     switchOrg,
     logout,
     initAuth,
+    waitForAuth,
     authFetch,
   }
 }
