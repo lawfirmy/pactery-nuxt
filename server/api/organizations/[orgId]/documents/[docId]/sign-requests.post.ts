@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
-import { sendSignRequestNotifications } from '~/server/utils/notifications'
+import { prisma } from '~~/server/utils/db'
+import { sendSignRequestNotifications } from '~~/server/utils/notifications'
 
 const signRequestSchema = z.object({
   signers: z.array(z.object({

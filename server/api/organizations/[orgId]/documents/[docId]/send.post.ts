@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Send document for signing (draft → pending) */
 export default defineEventHandler(async (event) => {

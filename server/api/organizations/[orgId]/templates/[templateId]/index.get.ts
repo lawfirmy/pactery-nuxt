@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Get template detail */
 export default defineEventHandler(async (event) => {

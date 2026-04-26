@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** List organizations the current user belongs to */
 export default defineEventHandler(async (event) => {

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 const createCaseSchema = z.object({
   caseNumber: z.string().optional(),

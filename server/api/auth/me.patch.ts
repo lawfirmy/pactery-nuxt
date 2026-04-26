@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 const updateSchema = z.object({
   name: z.string().min(1).max(50).optional(),

@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Remove a signer from a document */
 export default defineEventHandler(async (event) => {

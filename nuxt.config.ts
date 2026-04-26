@@ -42,5 +42,5 @@ export default defineNuxtConfig({
     preset: 'node-server',
   },
 
-  compatibilityDate: '2025-04-25',
+  compatibilityDate: '2026-04-26',
 })

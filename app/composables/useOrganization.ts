@@ -81,6 +81,16 @@ export const useOrganization = () => {
     return `/api/organizations/${orgId.value}/documents/${docId}/pdf`
   }
 
+  async function fetchPdfBuffer(docId: string): Promise<ArrayBuffer> {
+    if (!orgId.value) await waitForAuth()
+    if (!orgId.value) throw new Error('No organization selected')
+    const res = await fetch(`/api/organizations/${orgId.value}/documents/${docId}/pdf`, {
+      headers: { Authorization: `Bearer ${state.value.token}` },
+    })
+    if (!res.ok) throw new Error(`PDF fetch failed: ${res.status}`)
+    return res.arrayBuffer()
+  }
+
   return {
     orgId,
     orgFetch,
@@ -99,5 +109,6 @@ export const useOrganization = () => {
     saveFields,
     sendDocument,
     getPdfUrl,
+    fetchPdfBuffer,
   }
 }

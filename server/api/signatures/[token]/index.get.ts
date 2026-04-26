@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Get sign request info by token (no auth required - public signing link) */
 export default defineEventHandler(async (event) => {

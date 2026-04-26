@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 const inviteSchema = z.object({
   email: z.string().email(),

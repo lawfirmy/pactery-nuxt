@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 const fromTemplateSchema = z.object({
   templateId: z.string(),

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
-import { signToken } from '~/server/utils/jwt'
+import { prisma } from '~~/server/utils/db'
+import { signToken } from '~~/server/utils/jwt'
 
 const googleSchema = z.object({
   credential: z.string(), // Google ID token

@@ -1,5 +1,5 @@
-import { prisma } from '~/server/utils/db'
-import { sha256 } from '~/server/utils/crypto'
+import { prisma } from '~~/server/utils/db'
+import { sha256 } from '~~/server/utils/crypto'
 
 /** Upload PDF file for a document (member+) */
 export default defineEventHandler(async (event) => {

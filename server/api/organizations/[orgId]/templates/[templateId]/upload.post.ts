@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Upload PDF for a template */
 export default defineEventHandler(async (event) => {

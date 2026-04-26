@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Serve PDF file for authenticated org members */
 export default defineEventHandler(async (event) => {

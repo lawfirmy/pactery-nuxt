@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Get client detail with signature history */
 export default defineEventHandler(async (event) => {

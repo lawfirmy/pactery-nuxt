@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Get sign request detail for signer portal */
 export default defineEventHandler(async (event) => {

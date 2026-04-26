@@ -21,9 +21,12 @@ export const usePdf = () => {
     state.loading = true
     try {
       const pdfjsLib = await import('pdfjs-dist')
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
+      const workerModule = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerModule.default
 
-      const loadingTask = pdfjsLib.getDocument(source)
+      // Copy ArrayBuffer to prevent detachment when shared between components
+      const data = source instanceof ArrayBuffer ? source.slice(0) : source
+      const loadingTask = pdfjsLib.getDocument(data)
       state.pdf = await loadingTask.promise
       state.totalPages = state.pdf.numPages
       state.currentPage = 1

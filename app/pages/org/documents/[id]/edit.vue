@@ -57,7 +57,7 @@
             <button @click="reupload" class="text-sm text-blue-600 hover:underline">다시 업로드</button>
           </div>
           <ClientOnly>
-            <PdfViewer :src="pdfUrl" height="min(400px, 50vh)" />
+            <PdfViewer :src="pdfData" height="min(400px, 50vh)" />
             <template #fallback>
               <div class="h-96 flex items-center justify-center bg-gray-100">
                 <p class="text-gray-400">PDF 뷰어 로딩 중...</p>
@@ -155,7 +155,7 @@
         <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
           <ClientOnly>
             <FieldEditor
-              :pdf-src="pdfUrl"
+              :pdf-src="pdfData"
               v-model="fields"
               :signers="signers"
               height="min(550px, 60vh)"
@@ -270,7 +270,7 @@ useHead({ title: '문서 편집 - Pactery' })
 
 const route = useRoute()
 const docId = route.params.id as string
-const { fetchDocument, addSigner, removeSigner, uploadDocumentPdf, saveFields, sendDocument, getPdfUrl, orgId } = useOrganization()
+const { fetchDocument, addSigner, removeSigner, uploadDocumentPdf, saveFields, sendDocument, fetchPdfBuffer, orgId } = useOrganization()
 const { waitForAuth, state: authState } = useAuth()
 
 const pageLoading = ref(true)
@@ -293,10 +293,16 @@ const steps = [
   { label: '검토 및 발송' },
 ]
 
-const pdfUrl = computed(() => {
-  if (!doc.value?.originalFileKey || !orgId.value) return null
-  return `/api/organizations/${orgId.value}/documents/${docId}/pdf?t=${Date.now()}`
-})
+const pdfData = ref<ArrayBuffer | null>(null)
+
+async function loadPdfData() {
+  if (!doc.value?.originalFileKey) return
+  try {
+    pdfData.value = await fetchPdfBuffer(docId)
+  } catch (e) {
+    console.error('Failed to load PDF:', e)
+  }
+}
 
 const statusLabel = computed(() => {
   const map: Record<string, string> = { draft: '초안', pending: '서명 대기', completed: '완료' }
@@ -355,6 +361,11 @@ onMounted(async () => {
       id: f.id || crypto.randomUUID(),
     }))
 
+    // Load PDF if already uploaded
+    if (data.originalFileKey) {
+      await loadPdfData()
+    }
+
     // Auto-advance to first incomplete step
     if (data.originalFileKey && data.signRequests?.length > 0 && data.signFields?.length > 0) {
       step.value = 3
@@ -392,6 +403,7 @@ async function uploadPdf(file: File) {
     const result = await uploadDocumentPdf(docId, file)
     doc.value.originalFileKey = result.fileKey
     doc.value.originalHash = result.hash
+    await loadPdfData()
   } catch (e: any) {
     alert(e.data?.statusMessage || '업로드 실패')
     console.error('Upload failed:', e)

@@ -1,5 +1,5 @@
-import { prisma } from '~/server/utils/db'
-import { generateAuditTrailPdf } from '~/server/utils/pdf'
+import { prisma } from '~~/server/utils/db'
+import { generateAuditTrailPdf } from '~~/server/utils/pdf'
 
 /** Download audit trail certificate PDF */
 export default defineEventHandler(async (event) => {

@@ -36,7 +36,7 @@
         <div class="lg:col-span-2">
           <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <ClientOnly>
-              <PdfViewer :src="pdfUrl" height="min(600px, 60vh)">
+              <PdfViewer :src="pdfData" height="min(600px, 60vh)">
                 <template #overlay="{ page, scale }">
                   <FieldOverlay
                     :fields="doc.signFields"
@@ -145,17 +145,19 @@ useHead({ title: '문서 상세 - Pactery' })
 
 const route = useRoute()
 const docId = route.params.id as string
-const { fetchDocument, getPdfUrl } = useOrganization()
+const { fetchDocument, fetchPdfBuffer } = useOrganization()
 
 const loading = ref(true)
 const doc = ref<any>(null)
-
-const pdfUrl = computed(() => doc.value?.originalFileKey ? getPdfUrl(docId) : null)
+const pdfData = ref<ArrayBuffer | null>(null)
 
 onMounted(async () => {
   try {
     doc.value = await fetchDocument(docId)
     useHead({ title: `${doc.value.title} - Pactery` })
+    if (doc.value.originalFileKey) {
+      pdfData.value = await fetchPdfBuffer(docId)
+    }
   } catch (e) {
     console.error('Failed to load document:', e)
   } finally {

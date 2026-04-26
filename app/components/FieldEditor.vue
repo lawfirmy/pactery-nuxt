@@ -123,8 +123,15 @@ const currentPageNum = ref(1)
 const dragState = ref<{ field: SignField; startX: number; startY: number; fieldStartX: number; fieldStartY: number } | null>(null)
 const resizeState = ref<{ field: SignField; startX: number; startY: number; startW: number; startH: number } | null>(null)
 
-watch(() => props.modelValue, (v) => { fields.value = [...v] }, { deep: true })
-watch(fields, (v) => { emit('update:modelValue', v) }, { deep: true })
+let internalUpdate = false
+watch(() => props.modelValue, (v) => {
+  if (!internalUpdate) fields.value = [...v]
+}, { deep: true })
+watch(fields, (v) => {
+  internalUpdate = true
+  emit('update:modelValue', v)
+  nextTick(() => { internalUpdate = false })
+}, { deep: true })
 
 const fieldTypes = [
   { type: 'signature', label: '서명', icon: '✍️' },

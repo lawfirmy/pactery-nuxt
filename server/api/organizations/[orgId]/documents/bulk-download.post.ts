@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import archiver from 'archiver'
 import { PassThrough } from 'stream'
-import { prisma } from '~/server/utils/db'
-import { generateAuditTrailPdf } from '~/server/utils/pdf'
+import { prisma } from '~~/server/utils/db'
+import { generateAuditTrailPdf } from '~~/server/utils/pdf'
 
 const bulkSchema = z.object({
   documentIds: z.array(z.string()).min(1).max(50),

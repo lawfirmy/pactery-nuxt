@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Download signed or original PDF */
 export default defineEventHandler(async (event) => {

@@ -1,4 +1,4 @@
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 /** Remove a member from the organization (admin+) */
 export default defineEventHandler(async (event) => {

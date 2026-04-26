@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/db'
+import { prisma } from '~~/server/utils/db'
 
 const updateMemberSchema = z.object({
   role: z.enum(['admin', 'member', 'viewer']),
