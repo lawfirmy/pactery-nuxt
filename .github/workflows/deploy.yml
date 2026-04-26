@@ -46,8 +46,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: IMAGE
           script: |
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u lawfirmy --password-stdin
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u sangemi --password-stdin
             docker pull ${{ env.IMAGE }}
             docker stop pactery || true
             docker rm pactery || true
