@@ -99,6 +99,85 @@ const LEGAL_TEMPLATES = [
   },
 ]
 
+// ─── A/B Test Seed ───────────────────────────────────
+
+const AB_TESTS = [
+  {
+    name: 'landing-hero',
+    variants: [
+      {
+        id: 'a',
+        headline: '전자서명, 쉽고 빠르게',
+        subtext: '계약서 업로드부터 서명 완료까지 3분',
+        cta: '무료로 시작하기',
+        badge: '',
+        weight: 20,
+      },
+      {
+        id: 'b',
+        headline: '업계 최저가 전자서명',
+        subtext: 'eformsign 대비 60% 저렴. 같은 기능, 절반의 가격.',
+        cta: '최저가로 시작하기',
+        badge: '최저가 보장',
+        weight: 20,
+      },
+      {
+        id: 'c',
+        headline: '변호사가 만든 전자서명',
+        subtext: '15년차 변호사가 직접 설계. 법률사무소에 딱 맞는 워크플로우.',
+        cta: '법률 특화 서명 시작',
+        badge: '',
+        weight: 20,
+      },
+      {
+        id: 'd',
+        headline: '서명 요청 30초, 완료 3분',
+        subtext: 'PDF 올리고 서명자 지정하면 끝. 복잡한 설정 없이 바로.',
+        cta: '30초만에 시작',
+        badge: '',
+        weight: 20,
+      },
+      {
+        id: 'e',
+        headline: '서명 한 건도 빠뜨리지 않는',
+        subtext: 'PKI 암호화, 감사추적인증서, 실시간 알림. 법적 효력 100%.',
+        cta: '안전한 서명 시작',
+        badge: '법적효력 보장',
+        weight: 20,
+      },
+    ],
+  },
+]
+
+async function seedAbTests() {
+  console.log('Seeding A/B tests...')
+
+  for (const test of AB_TESTS) {
+    const existing = await prisma.abTest.findFirst({
+      where: { name: test.name },
+    })
+
+    if (existing) {
+      await prisma.abTest.update({
+        where: { id: existing.id },
+        data: { variants: test.variants as any },
+      })
+      console.log(`  Updated AbTest: ${test.name}`)
+    } else {
+      await prisma.abTest.create({
+        data: {
+          name: test.name,
+          variants: test.variants as any,
+          isActive: true,
+        },
+      })
+      console.log(`  Created AbTest: ${test.name}`)
+    }
+  }
+
+  console.log(`Done! ${AB_TESTS.length} A/B tests seeded.`)
+}
+
 async function main() {
   console.log('Seeding preset templates...')
 
@@ -132,6 +211,8 @@ async function main() {
   }
 
   console.log(`Done! ${LEGAL_TEMPLATES.length} preset templates.`)
+
+  await seedAbTests()
 }
 
 main()
