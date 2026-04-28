@@ -353,6 +353,10 @@ function goToStep(i: number) {
 onMounted(async () => {
   try {
     await waitForAuth()
+    if (!orgId.value) {
+      navigateTo('/auth/login')
+      return
+    }
     const data = await fetchDocument(docId)
     doc.value = data
     signers.value = data.signRequests || []
