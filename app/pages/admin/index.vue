@@ -201,7 +201,7 @@ async function toggleActive(test: AbTestWithStats) {
     await refresh()
   } catch (e) {
     console.error('toggle error:', e)
-    alert('변경에 실패했습니다.')
+    useToast().error('변경에 실패했습니다.')
   } finally {
     togglingId.value = null
   }
@@ -216,7 +216,7 @@ async function deleteTest(test: AbTestWithStats) {
     await refresh()
   } catch (e) {
     console.error('delete error:', e)
-    alert('삭제에 실패했습니다.')
+    useToast().error('삭제에 실패했습니다.')
   } finally {
     deletingId.value = null
   }

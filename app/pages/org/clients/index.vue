@@ -109,7 +109,7 @@ async function createClient() {
     Object.assign(newClient, { name: '', email: '', phone: '', company: '', memo: '' })
     await loadClients()
   } catch (e: any) {
-    alert(e.data?.statusMessage || '등록 실패')
+    useToast().error(e.data?.statusMessage || '등록 실패')
   }
 }
 </script>

@@ -272,6 +272,7 @@ const route = useRoute()
 const docId = route.params.id as string
 const { fetchDocument, addSigner, removeSigner, uploadDocumentPdf, saveFields, sendDocument, fetchPdfBuffer, orgId } = useOrganization()
 const { waitForAuth, state: authState } = useAuth()
+const toast = useToast()
 
 const pageLoading = ref(true)
 const doc = ref<any>(null)
@@ -409,7 +410,7 @@ async function uploadPdf(file: File) {
     doc.value.originalHash = result.hash
     await loadPdfData()
   } catch (e: any) {
-    alert(e.data?.statusMessage || '업로드 실패')
+    toast.error(e.data?.statusMessage || '업로드 실패')
     console.error('Upload failed:', e)
   } finally {
     uploading.value = false
@@ -435,7 +436,7 @@ async function handleAddSigner() {
     newSigner.signerEmail = ''
     newSigner.signerPhone = ''
   } catch (e: any) {
-    alert(e.data?.statusMessage || '서명자 추가 실패')
+    toast.error(e.data?.statusMessage || '서명자 추가 실패')
   }
 }
 
@@ -445,7 +446,7 @@ async function handleRemoveSigner(signRequestId: string) {
     signers.value = signers.value.filter(s => s.id !== signRequestId)
     fields.value = fields.value.filter(f => f.signRequestId !== signRequestId)
   } catch (e: any) {
-    alert(e.data?.statusMessage || '삭제 실패')
+    toast.error(e.data?.statusMessage || '삭제 실패')
   }
 }
 
@@ -465,9 +466,9 @@ async function handleSaveFields() {
     }))
     const result = await saveFields(docId, toSave)
     fields.value = result.fields.map((f: any) => ({ ...f, id: f.id }))
-    alert('필드가 저장되었습니다')
+    toast.success('필드가 저장되었습니다')
   } catch (e: any) {
-    alert(e.data?.statusMessage || '필드 저장 실패')
+    toast.error(e.data?.statusMessage || '필드 저장 실패')
     console.error('Save fields failed:', e)
   } finally {
     savingFields.value = false
@@ -484,10 +485,10 @@ async function handleSend() {
   sending.value = true
   try {
     await sendDocument(docId)
-    alert('서명 요청이 발송되었습니다!')
+    toast.success('서명 요청이 발송되었습니다!')
     navigateTo(`/org/documents/${docId}`)
   } catch (e: any) {
-    alert(e.data?.statusMessage || '발송 실패')
+    toast.error(e.data?.statusMessage || '발송 실패')
     console.error('Send failed:', e)
   } finally {
     sending.value = false

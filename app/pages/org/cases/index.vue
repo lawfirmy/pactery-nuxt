@@ -97,7 +97,7 @@ async function createCase() {
     newCase.description = ''
     await loadCases()
   } catch (e: any) {
-    alert(e.data?.statusMessage || '사건 등록 실패')
+    useToast().error(e.data?.statusMessage || '사건 등록 실패')
   }
 }
 </script>

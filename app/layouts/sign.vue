@@ -9,5 +9,6 @@
     <main class="max-w-4xl mx-auto py-6 px-4">
       <slot />
     </main>
+    <ToastContainer />
   </div>
 </template>

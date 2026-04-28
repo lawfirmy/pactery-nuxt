@@ -73,6 +73,7 @@
     <main>
       <slot />
     </main>
+    <ToastContainer />
   </div>
 </template>
 

@@ -160,7 +160,7 @@ async function updateStatus() {
   try {
     await orgFetch(`/cases/${caseId}`, { method: 'PATCH', body: { status: caseItem.value.status } })
   } catch (e: any) {
-    alert(e.data?.statusMessage || '상태 변경 실패')
+    useToast().error(e.data?.statusMessage || '상태 변경 실패')
   }
 }
 
@@ -171,7 +171,7 @@ async function createDocForCase() {
     newDocTitle.value = ''
     navigateTo(`/org/documents/${doc.id}`)
   } catch (e: any) {
-    alert(e.data?.statusMessage || '문서 생성 실패')
+    useToast().error(e.data?.statusMessage || '문서 생성 실패')
   }
 }
 

@@ -103,7 +103,7 @@ async function createTemplate() {
     Object.assign(newTpl, { title: '', category: '', description: '' })
     templates.value = await fetchTemplates()
   } catch (e: any) {
-    alert(e.data?.statusMessage || '생성 실패')
+    useToast().error(e.data?.statusMessage || '생성 실패')
   }
 }
 </script>

@@ -54,9 +54,9 @@ onMounted(async () => {
 async function saveSettings() {
   try {
     await orgFetch('', { method: 'PATCH', body: form })
-    alert('저장되었습니다')
+    useToast().success('저장되었습니다')
   } catch (e: any) {
-    alert(e.data?.statusMessage || '저장 실패')
+    useToast().error(e.data?.statusMessage || '저장 실패')
   }
 }
 </script>

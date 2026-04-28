@@ -98,7 +98,7 @@ async function handleInvite() {
     invite.role = 'member'
     members.value = await fetchMembers()
   } catch (e: any) {
-    alert(e.data?.statusMessage || '초대 실패')
+    useToast().error(e.data?.statusMessage || '초대 실패')
   }
 }
 
@@ -108,7 +108,7 @@ async function removeMember(memberId: string) {
     await orgFetch(`/members/${memberId}`, { method: 'DELETE' })
     members.value = await fetchMembers()
   } catch (e: any) {
-    alert(e.data?.statusMessage || '제거 실패')
+    useToast().error(e.data?.statusMessage || '제거 실패')
   }
 }
 

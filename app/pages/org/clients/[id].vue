@@ -133,7 +133,7 @@ async function saveClient() {
     client.value = { ...client.value, ...editForm }
     editing.value = false
   } catch (e: any) {
-    alert(e.data?.statusMessage || '저장 실패')
+    useToast().error(e.data?.statusMessage || '저장 실패')
   }
 }
 

@@ -255,7 +255,7 @@ async function bulkDownload() {
     a.click()
     URL.revokeObjectURL(url)
   } catch (e: any) {
-    alert('다운로드 실패: ' + (e.data?.statusMessage || e.message))
+    useToast().error('다운로드 실패: ' + (e.data?.statusMessage || e.message))
   } finally {
     downloading.value = false
   }
@@ -269,7 +269,7 @@ async function createNewDocument() {
     newDoc.memo = ''
     navigateTo(`/org/documents/${doc.id}/edit`)
   } catch (e: any) {
-    alert(e.data?.statusMessage || '문서 생성 실패')
+    useToast().error(e.data?.statusMessage || '문서 생성 실패')
   }
 }
 

@@ -142,7 +142,7 @@ function onSignatureConfirm(data: { type: string; value: string }) {
 
 async function handleSign() {
   if (!signatureValue.value && !allFieldsSigned.value) {
-    alert('서명을 입력해주세요')
+    useToast().error('서명을 입력해주세요')
     return
   }
 
@@ -160,7 +160,7 @@ async function handleSign() {
 
     completed.value = true
   } catch (e: any) {
-    alert(e.data?.statusMessage || '서명 처리 중 오류가 발생했습니다')
+    useToast().error(e.data?.statusMessage || '서명 처리 중 오류가 발생했습니다')
   } finally {
     submitting.value = false
   }
@@ -171,10 +171,10 @@ async function handleReject() {
 
   try {
     await $fetch(`/api/signatures/${token}/reject`, { method: 'POST' })
-    alert('서명이 거절되었습니다.')
+    useToast().info('서명이 거절되었습니다.')
     navigateTo('/')
   } catch (e: any) {
-    alert(e.data?.statusMessage || '처리 중 오류가 발생했습니다')
+    useToast().error(e.data?.statusMessage || '처리 중 오류가 발생했습니다')
   }
 }
 </script>
