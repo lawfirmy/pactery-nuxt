@@ -1,24 +1,28 @@
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 
-interface PdfState {
-  pdf: PDFDocumentProxy | null
-  totalPages: number
-  currentPage: number
-  scale: number
-  loading: boolean
-}
-
 export const usePdf = () => {
-  const state = reactive<PdfState>({
-    pdf: null,
-    totalPages: 0,
-    currentPage: 1,
-    scale: 1.0,
-    loading: false,
+  // Keep PDF object out of reactive — pdfjs uses private fields (#s)
+  // that break when wrapped in a Vue Proxy
+  const pdfDoc = shallowRef<PDFDocumentProxy | null>(null)
+  const totalPages = ref(0)
+  const currentPage = ref(1)
+  const scale = ref(1.0)
+  const loading = ref(false)
+
+  const state = reactive({
+    get pdf() { return pdfDoc.value },
+    get totalPages() { return totalPages.value },
+    set totalPages(v) { totalPages.value = v },
+    get currentPage() { return currentPage.value },
+    set currentPage(v) { currentPage.value = v },
+    get scale() { return scale.value },
+    set scale(v) { scale.value = v },
+    get loading() { return loading.value },
+    set loading(v) { loading.value = v },
   })
 
   async function loadPdf(source: string | ArrayBuffer) {
-    state.loading = true
+    loading.value = true
     try {
       const pdfjsLib = await import('pdfjs-dist')
       const workerModule = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
@@ -27,21 +31,21 @@ export const usePdf = () => {
       // Copy ArrayBuffer to prevent detachment when shared between components
       const data = source instanceof ArrayBuffer ? source.slice(0) : source
       const loadingTask = pdfjsLib.getDocument(data)
-      state.pdf = await loadingTask.promise
-      state.totalPages = state.pdf.numPages
-      state.currentPage = 1
+      pdfDoc.value = await loadingTask.promise
+      totalPages.value = pdfDoc.value.numPages
+      currentPage.value = 1
     } catch (e) {
       console.error('Failed to load PDF:', e)
       throw e
     } finally {
-      state.loading = false
+      loading.value = false
     }
   }
 
   async function renderPage(canvas: HTMLCanvasElement, pageNum: number) {
-    if (!state.pdf) return
+    if (!pdfDoc.value) return
 
-    const page = await state.pdf.getPage(pageNum)
+    const page = await pdfDoc.value.getPage(pageNum)
     const viewport = page.getViewport({ scale: state.scale })
 
     canvas.height = viewport.height
