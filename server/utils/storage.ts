@@ -23,7 +23,12 @@ async function localUpload(buffer: Buffer, _contentType: string, folder: string)
 
 async function localGetFile(key: string): Promise<Buffer> {
   const filePath = path.join(UPLOADS_DIR, key)
-  return fs.readFile(filePath)
+  try {
+    return await fs.readFile(filePath)
+  } catch (err: any) {
+    console.error(`[storage] File not found: ${filePath}`, err.message)
+    throw createError({ statusCode: 404, statusMessage: `File not found: ${key}` })
+  }
 }
 
 async function localDelete(key: string): Promise<void> {

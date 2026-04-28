@@ -20,8 +20,11 @@ services:
       DATABASE_URL: postgresql://pactery:pactery@db:5432/pactery?schema=public
     env_file:
       - .env
+    volumes:
+      - pactery_uploads:/app/.uploads
     depends_on:
       - db
 
 volumes:
+  pactery_uploads:
   pactery_pgdata:

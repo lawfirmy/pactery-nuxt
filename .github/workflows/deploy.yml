@@ -52,11 +52,13 @@ jobs:
             docker pull ${{ env.IMAGE }}
             docker stop pactery || true
             docker rm pactery || true
+            mkdir -p /home/ec2-user/servers/pactery/uploads
             docker run -d --name pactery \
               --restart always \
               --env-file /home/ec2-user/servers/pactery/.env \
               --add-host=host.docker.internal:host-gateway \
               -p 127.0.0.1:4540:4540 \
+              -v /home/ec2-user/servers/pactery/uploads:/app/.uploads \
               --memory 768m \
               --log-driver json-file \
               --log-opt max-size=10m \

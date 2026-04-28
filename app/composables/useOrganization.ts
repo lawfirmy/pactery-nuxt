@@ -87,7 +87,11 @@ export const useOrganization = () => {
     const res = await fetch(`/api/organizations/${orgId.value}/documents/${docId}/pdf`, {
       headers: { Authorization: `Bearer ${state.value.token}` },
     })
-    if (!res.ok) throw new Error(`PDF fetch failed: ${res.status}`)
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '')
+      console.error(`[fetchPdfBuffer] status=${res.status}, body=${errText}`)
+      throw new Error(`PDF fetch failed: ${res.status} — ${errText}`)
+    }
     return res.arrayBuffer()
   }
 
