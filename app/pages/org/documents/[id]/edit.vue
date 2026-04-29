@@ -69,6 +69,26 @@
         <div v-if="uploading" class="bg-white rounded-xl shadow-sm p-6 text-center">
           <div class="text-gray-500">업로드 중...</div>
         </div>
+
+        <!-- Expires At -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h3 class="text-sm font-medium text-gray-700 mb-3">만료일 설정 (선택)</h3>
+          <p class="text-xs text-gray-400 mb-2">설정하면 만료일 이후 서명이 불가합니다. 미설정 시 만료 없음.</p>
+          <input
+            v-model="expiresAt"
+            type="date"
+            class="w-full sm:w-64 px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+            :min="todayStr"
+            @change="handleExpiresAtChange"
+          />
+          <button
+            v-if="expiresAt"
+            @click="clearExpiresAt"
+            class="ml-2 text-sm text-red-500 hover:text-red-700"
+          >
+            제거
+          </button>
+        </div>
       </div>
 
       <!-- Step 2: Signers -->
@@ -139,6 +159,60 @@
                   서명자 추가
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CC Recipients -->
+        <div class="bg-gray-50 rounded-xl shadow-sm p-6 border border-gray-200">
+          <h2 class="font-semibold mb-1">참조자 (CC)</h2>
+          <p class="text-xs text-gray-500 mb-4">참조자는 서명을 하지 않고, 문서 완료 시 이메일만 받습니다.</p>
+
+          <div v-if="ccRecipients.length > 0" class="space-y-2 mb-4">
+            <div
+              v-for="cc in ccRecipients"
+              :key="cc.id"
+              class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg"
+            >
+              <div class="flex items-center gap-3">
+                <span class="w-7 h-7 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold">CC</span>
+                <div>
+                  <p class="text-sm font-medium">{{ cc.name }}</p>
+                  <p class="text-xs text-gray-400">{{ cc.email }}</p>
+                </div>
+              </div>
+              <button @click="handleRemoveCc(cc.id)" class="text-sm text-red-500 hover:text-red-700">삭제</button>
+            </div>
+          </div>
+
+          <!-- Add CC form -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1.5">이름</label>
+              <input
+                v-model="newCc.name"
+                type="text"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                placeholder="참조자 이름"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1.5">이메일</label>
+              <input
+                v-model="newCc.email"
+                type="email"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                placeholder="cc@example.com"
+              />
+            </div>
+            <div class="flex items-end">
+              <button
+                @click="handleAddCc"
+                :disabled="!newCc.name || !newCc.email"
+                class="w-full px-4 py-2.5 bg-gray-600 text-white rounded-lg text-sm font-medium hover:bg-gray-700 disabled:opacity-40"
+              >
+                참조자 추가
+              </button>
             </div>
           </div>
         </div>
@@ -270,7 +344,7 @@ useHead({ title: '문서 편집 - Pactery' })
 
 const route = useRoute()
 const docId = route.params.id as string
-const { fetchDocument, addSigner, removeSigner, uploadDocumentPdf, saveFields, sendDocument, fetchPdfBuffer, orgId } = useOrganization()
+const { fetchDocument, updateDocument, addSigner, removeSigner, addCcRecipient, removeCcRecipient, uploadDocumentPdf, saveFields, sendDocument, fetchPdfBuffer, orgId } = useOrganization()
 const { waitForAuth, state: authState } = useAuth()
 const toast = useToast()
 
@@ -284,6 +358,9 @@ const savingFields = ref(false)
 const sending = ref(false)
 const dragOver = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const expiresAt = ref('')
+const todayStr = new Date().toISOString().slice(0, 10)
 
 const newSigner = reactive({ signerName: '', signerEmail: '', signerPhone: '' })
 
@@ -366,6 +443,11 @@ onMounted(async () => {
       id: f.id || crypto.randomUUID(),
     }))
 
+    // Set expiresAt if already set
+    if (data.expiresAt) {
+      expiresAt.value = new Date(data.expiresAt).toISOString().slice(0, 10)
+    }
+
     // Load PDF if already uploaded
     if (data.originalFileKey) {
       await loadPdfData()
@@ -420,6 +502,26 @@ async function uploadPdf(file: File) {
 function reupload() {
   doc.value.originalFileKey = null
   triggerFileInput()
+}
+
+// ExpiresAt
+async function handleExpiresAtChange() {
+  try {
+    await updateDocument(docId, { expiresAt: expiresAt.value ? new Date(expiresAt.value).toISOString() : null })
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '만료일 저장 실패')
+    console.error('Failed to update expiresAt:', e)
+  }
+}
+
+async function clearExpiresAt() {
+  expiresAt.value = ''
+  try {
+    await updateDocument(docId, { expiresAt: null })
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '만료일 제거 실패')
+    console.error('Failed to clear expiresAt:', e)
+  }
 }
 
 // Signers

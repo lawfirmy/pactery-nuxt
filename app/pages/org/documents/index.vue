@@ -26,6 +26,7 @@
           <option value="pending">서명 대기</option>
           <option value="completed">완료</option>
           <option value="rejected">거절</option>
+          <option value="expired">만료</option>
         </select>
         <button @click="handleSearch" class="px-4 py-2.5 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">
           검색
@@ -70,6 +71,7 @@
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">서명자</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">날짜</th>
+            <th class="px-4 py-3 w-12"></th>
           </tr>
         </thead>
         <tbody class="divide-y">
@@ -94,8 +96,22 @@
             </td>
             <td class="px-4 py-3">
               <span :class="statusClass(doc.status)" class="text-xs px-2 py-1 rounded-full">{{ statusLabel(doc.status) }}</span>
+              <span v-if="doc.expiresAt && doc.status !== 'expired' && doc.status !== 'completed'" :class="expiryClass(doc.expiresAt)" class="text-xs ml-1">
+                {{ expiryLabel(doc.expiresAt) }}
+              </span>
             </td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(doc.createdAt) }}</td>
+            <td class="px-4 py-3" @click.stop>
+              <button
+                @click="handleDuplicate(doc.id)"
+                class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                title="복제"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -111,8 +127,11 @@
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0 flex-1">
               <p class="font-medium text-sm truncate">{{ doc.title }}</p>
-              <div class="flex items-center gap-2 mt-1.5">
+              <div class="flex items-center gap-2 mt-1.5 flex-wrap">
                 <span :class="statusClass(doc.status)" class="text-xs px-2 py-0.5 rounded-full">{{ statusLabel(doc.status) }}</span>
+                <span v-if="doc.expiresAt && doc.status !== 'expired' && doc.status !== 'completed'" :class="expiryClass(doc.expiresAt)" class="text-xs">
+                  {{ expiryLabel(doc.expiresAt) }}
+                </span>
                 <span class="text-xs text-gray-400">{{ formatDate(doc.createdAt) }}</span>
               </div>
               <div v-if="doc.signRequests?.length" class="flex flex-wrap gap-1 mt-1.5">
@@ -121,9 +140,20 @@
                 </span>
               </div>
             </div>
-            <svg class="w-5 h-5 text-gray-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
+            <div class="flex items-center gap-1 shrink-0">
+              <button
+                @click.stop="handleDuplicate(doc.id)"
+                class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                title="복제"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -185,7 +215,8 @@
 <script setup lang="ts">
 useHead({ title: '문서함 - Pactery' })
 
-const { fetchDocuments, createDocument, orgFetch } = useOrganization()
+const { fetchDocuments, createDocument, duplicateDocument, orgFetch } = useOrganization()
+const toast = useToast()
 
 const search = ref('')
 const statusFilter = ref('')
@@ -255,7 +286,7 @@ async function bulkDownload() {
     a.click()
     URL.revokeObjectURL(url)
   } catch (e: any) {
-    useToast().error('다운로드 실패: ' + (e.data?.statusMessage || e.message))
+    toast.error('다운로드 실패: ' + (e.data?.statusMessage || e.message))
   } finally {
     downloading.value = false
   }
@@ -269,7 +300,18 @@ async function createNewDocument() {
     newDoc.memo = ''
     navigateTo(`/org/documents/${doc.id}/edit`)
   } catch (e: any) {
-    useToast().error(e.data?.statusMessage || '문서 생성 실패')
+    toast.error(e.data?.statusMessage || '문서 생성 실패')
+  }
+}
+
+async function handleDuplicate(docId: string) {
+  try {
+    const duplicated = await duplicateDocument(docId)
+    toast.success('문서가 복제되었습니다')
+    navigateTo(`/org/documents/${duplicated.id}/edit`)
+  } catch (e: any) {
+    console.error('Failed to duplicate document:', e)
+    toast.error(e.data?.statusMessage || '문서 복제 실패')
   }
 }
 
@@ -283,6 +325,26 @@ function statusLabel(status: string) {
     completed: '완료', rejected: '거절', expired: '만료',
   }
   return map[status] || status
+}
+
+function daysUntilExpiry(expiresAt: string): number {
+  const now = new Date()
+  const exp = new Date(expiresAt)
+  return Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+function expiryLabel(expiresAt: string): string {
+  const days = daysUntilExpiry(expiresAt)
+  if (days < 0) return '만료됨'
+  if (days === 0) return '오늘 만료'
+  return `${days}일 후 만료`
+}
+
+function expiryClass(expiresAt: string): string {
+  const days = daysUntilExpiry(expiresAt)
+  if (days <= 0) return 'text-red-600 font-medium'
+  if (days <= 3) return 'text-red-500'
+  return 'text-gray-400'
 }
 
 function statusClass(status: string) {

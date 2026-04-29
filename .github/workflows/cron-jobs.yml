@@ -1,0 +1,50 @@
+name: Cron Jobs
+
+on:
+  schedule:
+    # Expire documents: every hour
+    - cron: '0 * * * *'
+    # Send reminders: every day at 9:00 AM KST (0:00 UTC)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - expire-documents
+          - send-reminders
+
+jobs:
+  expire-documents:
+    if: github.event.schedule == '0 * * * *' || github.event.inputs.job == 'all' || github.event.inputs.job == 'expire-documents'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Expire documents
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            https://pactery.com/api/cron/expire-documents)
+          echo "Response code: $response"
+          if [ "$response" != "200" ]; then
+            echo "Failed with status $response"
+            exit 1
+          fi
+
+  send-reminders:
+    if: github.event.schedule == '0 0 * * *' || github.event.inputs.job == 'all' || github.event.inputs.job == 'send-reminders'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send reminders
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            https://pactery.com/api/cron/send-reminders)
+          echo "Response code: $response"
+          if [ "$response" != "200" ]; then
+            echo "Failed with status $response"
+            exit 1
+          fi

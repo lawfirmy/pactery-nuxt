@@ -30,6 +30,9 @@ export default defineNuxtConfig({
     // Claude AI
     claudeApiKey: process.env.CLAUDE_API_KEY || '',
 
+    // Cron
+    cronSecret: process.env.CRON_SECRET || '',
+
     public: {
       appName: 'Pactery',
       appUrl: process.env.APP_URL || 'http://localhost:4540',

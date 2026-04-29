@@ -97,6 +97,7 @@ model Document {
   signFields   SignField[]
   auditLogs    AuditLog[]
   tags         DocumentTag[]
+  ccRecipients CcRecipient[]
 
   @@index([orgId, status])
   @@index([orgId, createdAt])
@@ -116,6 +117,7 @@ model SignRequest {
   orderIndex   Int       @default(0) @map("order_index")
   status       String    @default("pending") // pending, signed, rejected
   signedAt     DateTime? @map("signed_at")
+  rejectionReason String? @map("rejection_reason")
   ipAddress    String?   @map("ip_address")
   userAgent    String?   @map("user_agent")
   geoLocation  String?   @map("geo_location")
@@ -285,4 +287,19 @@ model DocumentTag {
   @@unique([documentId, tag])
   @@index([tag])
   @@map("document_tags")
+}
+
+// ─── CC Recipients ──────────────────────────────────
+
+model CcRecipient {
+  id         String   @id @default(uuid())
+  documentId String   @map("document_id")
+  name       String
+  email      String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("cc_recipients")
 }

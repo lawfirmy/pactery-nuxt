@@ -26,6 +26,10 @@ export const useOrganization = () => {
     return orgFetch<any>('/documents', { method: 'POST', body: data })
   }
 
+  async function updateDocument(docId: string, data: Record<string, any>) {
+    return orgFetch<any>(`/documents/${docId}`, { method: 'PATCH', body: data })
+  }
+
   async function fetchMembers() {
     return orgFetch<any>('/members')
   }
@@ -56,6 +60,14 @@ export const useOrganization = () => {
     return orgFetch<any>(`/documents/${docId}/signers/${signRequestId}`, { method: 'DELETE' })
   }
 
+  async function addCcRecipient(docId: string, data: { name: string; email: string }) {
+    return orgFetch<any>(`/documents/${docId}/cc`, { method: 'POST', body: data })
+  }
+
+  async function removeCcRecipient(docId: string, ccId: string) {
+    return orgFetch<any>(`/documents/${docId}/cc/${ccId}`, { method: 'DELETE' })
+  }
+
   async function uploadDocumentPdf(docId: string, file: File) {
     const formData = new FormData()
     formData.append('file', file)
@@ -74,6 +86,10 @@ export const useOrganization = () => {
 
   async function sendDocument(docId: string) {
     return orgFetch<any>(`/documents/${docId}/send`, { method: 'POST' })
+  }
+
+  async function duplicateDocument(docId: string) {
+    return orgFetch<any>(`/documents/${docId}/duplicate`, { method: 'POST' })
   }
 
   function getPdfUrl(docId: string) {
@@ -102,6 +118,7 @@ export const useOrganization = () => {
     fetchDocuments,
     fetchDocument,
     createDocument,
+    updateDocument,
     fetchMembers,
     inviteMember,
     fetchCases,
@@ -109,9 +126,12 @@ export const useOrganization = () => {
     fetchTemplates,
     addSigner,
     removeSigner,
+    addCcRecipient,
+    removeCcRecipient,
     uploadDocumentPdf,
     saveFields,
     sendDocument,
+    duplicateDocument,
     getPdfUrl,
     fetchPdfBuffer,
   }

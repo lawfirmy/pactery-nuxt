@@ -25,6 +25,12 @@
           <a v-if="doc.originalFileKey" :href="`/api/documents/${doc.id}/download`" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
             PDF 다운로드
           </a>
+          <button
+            @click="handleDuplicate"
+            class="px-4 py-2 border text-sm rounded-lg hover:bg-gray-50"
+          >
+            복제
+          </button>
           <a :href="`/api/documents/${doc.id}/audit-trail`" class="px-4 py-2 border text-sm rounded-lg hover:bg-gray-50">
             감사추적인증서
           </a>
@@ -145,7 +151,8 @@ useHead({ title: '문서 상세 - Pactery' })
 
 const route = useRoute()
 const docId = route.params.id as string
-const { fetchDocument, fetchPdfBuffer } = useOrganization()
+const { fetchDocument, fetchPdfBuffer, duplicateDocument } = useOrganization()
+const toast = useToast()
 
 const loading = ref(true)
 const doc = ref<any>(null)
@@ -164,6 +171,17 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+async function handleDuplicate() {
+  try {
+    const duplicated = await duplicateDocument(docId)
+    toast.success('문서가 복제되었습니다')
+    navigateTo(`/org/documents/${duplicated.id}/edit`)
+  } catch (e: any) {
+    console.error('Failed to duplicate document:', e)
+    toast.error(e.data?.statusMessage || '문서 복제 실패')
+  }
+}
 
 function formatDate(d: string) { return new Date(d).toLocaleDateString('ko-KR') }
 function formatDateTime(d: string) { return new Date(d).toLocaleString('ko-KR') }

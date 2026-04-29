@@ -1,5 +1,5 @@
 import { prisma } from './db'
-import { sendEmail, buildSignRequestEmail, buildCompletedEmail } from './email'
+import { sendEmail, buildSignRequestEmail, buildCompletedEmail, buildCcNotificationEmail } from './email'
 import { generateAuditTrailPdf } from './pdf'
 
 /** Send sign request emails to all pending signers */
@@ -52,6 +52,7 @@ export async function sendCompletedNotifications(documentId: string) {
       creator: { select: { name: true, email: true } },
       org: { select: { name: true } },
       signRequests: { where: { status: 'signed' } },
+      ccRecipients: true,
       auditLogs: { orderBy: { createdAt: 'asc' } },
     },
   })
@@ -96,6 +97,26 @@ export async function sendCompletedNotifications(documentId: string) {
       })
     } catch (err) {
       console.error(`Failed to send completed email to ${email}:`, err)
+    }
+  }
+
+  // Send to CC recipients
+  for (const cc of doc.ccRecipients) {
+    const html = buildCcNotificationEmail({
+      recipientName: cc.name,
+      documentTitle: doc.title,
+      orgName: doc.org.name,
+      downloadUrl,
+    })
+
+    try {
+      await sendEmail({
+        to: cc.email,
+        subject: `[서명 완료 - 참조] ${doc.title}`,
+        html,
+      })
+    } catch (err) {
+      console.error(`Failed to send CC notification email to ${cc.email}:`, err)
     }
   }
 }
