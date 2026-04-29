@@ -363,6 +363,8 @@ const expiresAt = ref('')
 const todayStr = new Date().toISOString().slice(0, 10)
 
 const newSigner = reactive({ signerName: '', signerEmail: '', signerPhone: '' })
+const ccRecipients = ref<any[]>([])
+const newCc = reactive({ name: '', email: '' })
 
 const steps = [
   { label: 'PDF 업로드' },
@@ -438,6 +440,7 @@ onMounted(async () => {
     const data = await fetchDocument(docId)
     doc.value = data
     signers.value = data.signRequests || []
+    ccRecipients.value = data.ccRecipients || []
     fields.value = (data.signFields || []).map((f: any) => ({
       ...f,
       id: f.id || crypto.randomUUID(),
@@ -549,6 +552,28 @@ async function handleRemoveSigner(signRequestId: string) {
     fields.value = fields.value.filter(f => f.signRequestId !== signRequestId)
   } catch (e: any) {
     toast.error(e.data?.statusMessage || '삭제 실패')
+  }
+}
+
+// CC Recipients
+async function handleAddCc() {
+  if (!newCc.name || !newCc.email) return
+  try {
+    const cc = await addCcRecipient(docId, { name: newCc.name, email: newCc.email })
+    ccRecipients.value.push(cc)
+    newCc.name = ''
+    newCc.email = ''
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '참조자 추가 실패')
+  }
+}
+
+async function handleRemoveCc(ccId: string) {
+  try {
+    await removeCcRecipient(docId, ccId)
+    ccRecipients.value = ccRecipients.value.filter(c => c.id !== ccId)
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '참조자 삭제 실패')
   }
 }
 
