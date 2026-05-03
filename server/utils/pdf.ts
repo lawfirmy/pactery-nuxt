@@ -5,10 +5,8 @@ import { sha256 } from './crypto'
 let _koreanFontBytes: Buffer | null = null
 async function getKoreanFont(): Promise<Buffer> {
   if (!_koreanFontBytes) {
-    const storage = useStorage('assets:fonts')
-    // Nitro strips extensions in asset keys
+    const storage = useStorage('assets:server:fonts')
     const data = await storage.getItemRaw('NotoSansKR-Regular.ttf')
-      ?? await storage.getItemRaw('NotoSansKR-Regular')
     if (!data) {
       // List keys for debugging
       const keys = await storage.getKeys()
