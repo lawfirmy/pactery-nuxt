@@ -6,7 +6,15 @@ let _koreanFontBytes: Buffer | null = null
 async function getKoreanFont(): Promise<Buffer> {
   if (!_koreanFontBytes) {
     const storage = useStorage('assets:fonts')
+    // Nitro strips extensions in asset keys
     const data = await storage.getItemRaw('NotoSansKR-Regular.ttf')
+      ?? await storage.getItemRaw('NotoSansKR-Regular')
+    if (!data) {
+      // List keys for debugging
+      const keys = await storage.getKeys()
+      console.error('[font] Available keys:', keys)
+      throw new Error('Korean font not found in server assets')
+    }
     _koreanFontBytes = Buffer.from(data as ArrayBuffer)
   }
   return _koreanFontBytes
