@@ -43,6 +43,10 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'node-server',
+    serverAssets: [{
+      baseName: 'fonts',
+      dir: './server/assets/fonts',
+    }],
   },
 
   compatibilityDate: '2026-04-26',

@@ -1,5 +1,16 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
+import fontkit from '@pdf-lib/fontkit'
 import { sha256 } from './crypto'
+
+let _koreanFontBytes: Buffer | null = null
+async function getKoreanFont(): Promise<Buffer> {
+  if (!_koreanFontBytes) {
+    const storage = useStorage('assets:fonts')
+    const data = await storage.getItemRaw('NotoSansKR-Regular.ttf')
+    _koreanFontBytes = Buffer.from(data as ArrayBuffer)
+  }
+  return _koreanFontBytes
+}
 
 /** Compute SHA-256 hash of a PDF buffer */
 export function hashPdf(pdfBuffer: Buffer): string {
@@ -72,9 +83,12 @@ export async function generateAuditTrailPdf(auditData: {
   }>
 }): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create()
+  pdfDoc.registerFontkit(fontkit)
+
   const page = pdfDoc.addPage([595, 842]) // A4
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
-  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+  const koreanFont = await pdfDoc.embedFont(await getKoreanFont())
+  const font = koreanFont
+  const boldFont = koreanFont
 
   let y = 780
 
