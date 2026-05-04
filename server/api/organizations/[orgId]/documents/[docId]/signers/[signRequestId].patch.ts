@@ -1,11 +1,20 @@
+import { z } from 'zod'
 import { prisma } from '~~/server/utils/db'
 
-/** Remove a signer from a document */
+const updateSignerSchema = z.object({
+  signerName: z.string().min(1).max(100).optional(),
+  signerEmail: z.string().email().optional(),
+  signerPhone: z.string().optional(),
+})
+
+/** Update signer info (draft status only) */
 export default defineEventHandler(async (event) => {
   const orgId = getRouterParam(event, 'orgId')!
   const docId = getRouterParam(event, 'docId')!
   const signRequestId = getRouterParam(event, 'signRequestId')!
-  const { auth } = await requireOrgRole(event, orgId, 'member')
+  await requireOrgRole(event, orgId, 'member')
+
+  const body = await readValidatedBody(event, updateSignerSchema.parse)
 
   const document = await prisma.document.findFirst({
     where: { id: docId, orgId, status: 'draft' },
@@ -14,7 +23,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Document not found or not in draft status' })
   }
 
-  // Fetch signer info before deleting for audit log
   const signRequest = await prisma.signRequest.findFirst({
     where: { id: signRequestId, documentId: docId },
   })
@@ -22,19 +30,14 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Sign request not found' })
   }
 
-  // Delete associated sign fields first, then sign request
-  await prisma.$transaction([
-    prisma.signField.deleteMany({ where: { signRequestId } }),
-    prisma.signRequest.delete({ where: { id: signRequestId } }),
-  ])
-
-  await createAuditLog(event, {
-    documentId: docId,
-    eventType: 'signer_removed',
-    actorType: 'user',
-    actorId: auth.userId,
-    metadata: { signerName: signRequest.signerName, signerEmail: signRequest.signerEmail },
+  const updated = await prisma.signRequest.update({
+    where: { id: signRequestId },
+    data: {
+      ...(body.signerName && { signerName: body.signerName }),
+      ...(body.signerEmail && { signerEmail: body.signerEmail }),
+      ...(body.signerPhone !== undefined && { signerPhone: body.signerPhone || null }),
+    },
   })
 
-  return { success: true }
+  return updated
 })

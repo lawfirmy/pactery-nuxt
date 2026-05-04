@@ -62,21 +62,20 @@
 
         <!-- Sidebar -->
         <div class="space-y-4">
-          <!-- Signers -->
-          <div class="bg-white rounded-xl shadow-sm p-5">
-            <h2 class="font-semibold mb-3">서명자</h2>
-            <div class="space-y-3">
-              <div v-for="sr in doc.signRequests" :key="sr.id" class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm font-medium">{{ sr.signerName }}</p>
-                  <p class="text-xs text-gray-400">{{ sr.signerEmail }}</p>
-                </div>
-                <span :class="signerStatusClass(sr.status)" class="text-xs px-2 py-1 rounded-full">
-                  {{ signerStatusLabel(sr.status) }}
-                </span>
-              </div>
-            </div>
-          </div>
+          <!-- Signers Panel -->
+          <SignerPanel
+            :signers="doc.signRequests"
+            :doc-status="doc.status"
+            :doc-id="doc.id"
+            @add="handleAddSigner"
+            @remove="handleRemoveSigner"
+            @update="handleUpdateSigner"
+            @reorder="handleReorderSigner"
+            @send="handleSendAll"
+            @send-request="handleSendRequest"
+            @send-reminder="handleSendReminder"
+            @copy-link="handleCopyLink"
+          />
 
           <!-- Document info -->
           <div class="bg-white rounded-xl shadow-sm p-5">
@@ -116,24 +115,10 @@
           </div>
 
           <!-- Audit Trail Timeline -->
-          <div class="bg-white rounded-xl shadow-sm p-5">
-            <h2 class="font-semibold mb-3">감사추적</h2>
-            <div class="space-y-3">
-              <div v-for="log in doc.auditLogs" :key="log.id" class="flex gap-3">
-                <div class="flex flex-col items-center">
-                  <div :class="auditDotClass(log.eventType)" class="w-2.5 h-2.5 rounded-full mt-1.5"></div>
-                  <div class="w-px flex-1 bg-gray-200"></div>
-                </div>
-                <div class="pb-3">
-                  <p class="text-sm font-medium">{{ auditLabel(log.eventType) }}</p>
-                  <p class="text-xs text-gray-400">
-                    {{ formatDateTime(log.createdAt) }}
-                    <span v-if="log.ipAddress"> | {{ log.ipAddress }}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AuditTimeline
+            :logs="auditLogsWithSignerName"
+            :signers="doc.signRequests"
+          />
 
           <!-- Memo -->
           <div v-if="doc.memo" class="bg-white rounded-xl shadow-sm p-5">
@@ -151,7 +136,7 @@ useHead({ title: '문서 상세 - Pactery' })
 
 const route = useRoute()
 const docId = route.params.id as string
-const { fetchDocument, fetchPdfBuffer, duplicateDocument } = useOrganization()
+const { fetchDocument, fetchPdfBuffer, duplicateDocument, addSigner, removeSigner, sendDocument, orgFetch } = useOrganization()
 const toast = useToast()
 
 const loading = ref(true)
@@ -172,6 +157,96 @@ onMounted(async () => {
   }
 })
 
+// Audit logs with signer name mapping
+const auditLogsWithSignerName = computed(() => {
+  if (!doc.value?.auditLogs) return []
+  const signerMap = new Map(
+    (doc.value.signRequests || []).map((sr: any) => [sr.id, sr.signerName])
+  )
+  return doc.value.auditLogs.map((log: any) => ({
+    ...log,
+    signerName: log.signRequestId ? signerMap.get(log.signRequestId) : null,
+  }))
+})
+
+// Signer management handlers
+async function handleAddSigner(data: { signerName: string; signerEmail: string; signerPhone?: string }) {
+  try {
+    await addSigner(docId, data)
+    doc.value = await fetchDocument(docId)
+    toast.success('서명자가 추가되었습니다')
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '서명자 추가 실패')
+  }
+}
+
+async function handleRemoveSigner(signRequestId: string) {
+  try {
+    await removeSigner(docId, signRequestId)
+    doc.value = await fetchDocument(docId)
+    toast.success('서명자가 삭제되었습니다')
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '서명자 삭제 실패')
+  }
+}
+
+async function handleUpdateSigner(signRequestId: string, data: { signerName: string; signerEmail: string; signerPhone?: string }) {
+  try {
+    await orgFetch(`/documents/${docId}/signers/${signRequestId}`, { method: 'PATCH', body: data })
+    doc.value = await fetchDocument(docId)
+    toast.success('서명자 정보가 수정되었습니다')
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '서명자 수정 실패')
+  }
+}
+
+async function handleReorderSigner(signRequestId: string, newIndex: number) {
+  try {
+    await orgFetch(`/documents/${docId}/signers/${signRequestId}/reorder`, { method: 'PATCH', body: { orderIndex: newIndex } })
+    doc.value = await fetchDocument(docId)
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '순서 변경 실패')
+  }
+}
+
+async function handleSendAll() {
+  try {
+    await sendDocument(docId)
+    doc.value = await fetchDocument(docId)
+    toast.success('서명요청이 발송되었습니다')
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '서명요청 발송 실패')
+  }
+}
+
+async function handleSendRequest(signRequestId: string) {
+  try {
+    await orgFetch(`/documents/${docId}/signers/${signRequestId}/send`, { method: 'POST' })
+    toast.success('서명요청이 발송되었습니다')
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '발송 실패')
+  }
+}
+
+async function handleSendReminder(signRequestId: string) {
+  try {
+    await orgFetch(`/documents/${docId}/signers/${signRequestId}/remind`, { method: 'POST' })
+    toast.success('리마인더가 발송되었습니다')
+  } catch (e: any) {
+    toast.error(e.data?.statusMessage || '리마인더 발송 실패')
+  }
+}
+
+async function handleCopyLink(token: string) {
+  const url = `${window.location.origin}/sign/${token}`
+  try {
+    await navigator.clipboard.writeText(url)
+    toast.success('서명 링크가 복사되었습니다')
+  } catch {
+    toast.error('복사 실패')
+  }
+}
+
 async function handleDuplicate() {
   try {
     const duplicated = await duplicateDocument(docId)
@@ -184,24 +259,11 @@ async function handleDuplicate() {
 }
 
 function formatDate(d: string) { return new Date(d).toLocaleDateString('ko-KR') }
-function formatDateTime(d: string) { return new Date(d).toLocaleString('ko-KR') }
 
 function statusLabel(s: string) {
   return { draft: '초안', pending: '서명 대기', partially_signed: '부분 서명', completed: '완료', rejected: '거절', expired: '만료' }[s] || s
 }
 function statusClass(s: string) {
   return { draft: 'bg-gray-100 text-gray-700', pending: 'bg-yellow-100 text-yellow-800', partially_signed: 'bg-blue-100 text-blue-800', completed: 'bg-green-100 text-green-800', rejected: 'bg-red-100 text-red-800', expired: 'bg-gray-100 text-gray-500' }[s] || 'bg-gray-100'
-}
-function signerStatusLabel(s: string) {
-  return { pending: '대기', signed: '완료', rejected: '거절' }[s] || s
-}
-function signerStatusClass(s: string) {
-  return { pending: 'bg-yellow-100 text-yellow-800', signed: 'bg-green-100 text-green-800', rejected: 'bg-red-100 text-red-800' }[s] || 'bg-gray-100'
-}
-function auditLabel(t: string) {
-  return { created: '문서 생성', sent: '서명 요청 발송', opened: '문서 열람', signed: '서명 완료', rejected: '서명 거절', downloaded: '다운로드', printed: '인쇄' }[t] || t
-}
-function auditDotClass(t: string) {
-  return { created: 'bg-gray-400', sent: 'bg-blue-400', opened: 'bg-yellow-400', signed: 'bg-green-400', rejected: 'bg-red-400', downloaded: 'bg-purple-400' }[t] || 'bg-gray-400'
 }
 </script>

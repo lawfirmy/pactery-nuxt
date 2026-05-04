@@ -54,8 +54,10 @@ export default defineEventHandler(async (event) => {
     },
   })
 
-  // TODO: Send email notifications to signers
-  // await sendSignRequestNotifications(docId)
+  // Send email notifications to signers (fire-and-forget)
+  sendSignRequestNotifications(docId).catch((err) => {
+    console.error(`Failed to send sign request notifications for doc ${docId}:`, err)
+  })
 
   return updated
 })

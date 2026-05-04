@@ -1,5 +1,5 @@
 import { prisma } from './db'
-import { sendEmail, buildSignRequestEmail, buildCompletedEmail, buildCcNotificationEmail } from './email'
+import { sendEmail, buildSignRequestEmail, buildReminderEmail, buildCompletedEmail, buildCcNotificationEmail } from './email'
 import { generateAuditTrailPdf } from './pdf'
 
 /** Send sign request emails to all pending signers */
@@ -40,6 +40,75 @@ export async function sendSignRequestNotifications(documentId: string) {
       console.error(`Failed to send sign request email to ${sr.signerEmail}:`, err)
     }
   }
+}
+
+/** Send sign request email to a single signer */
+export async function sendIndividualSignRequest(signRequestId: string) {
+  const config = useRuntimeConfig()
+
+  const sr = await prisma.signRequest.findUnique({
+    where: { id: signRequestId },
+    include: {
+      document: {
+        include: {
+          creator: { select: { name: true } },
+          org: { select: { name: true, logoUrl: true, primaryColor: true } },
+        },
+      },
+    },
+  })
+
+  if (!sr || sr.status !== 'pending') return
+
+  const signUrl = `${config.public.appUrl}/sign/${sr.token}`
+  const html = buildSignRequestEmail({
+    signerName: sr.signerName,
+    documentTitle: sr.document.title,
+    senderName: sr.document.creator.name,
+    orgName: sr.document.org.name,
+    signUrl,
+    orgColor: sr.document.org.primaryColor || undefined,
+    orgLogoUrl: sr.document.org.logoUrl || undefined,
+  })
+
+  await sendEmail({
+    to: sr.signerEmail,
+    subject: `[서명 요청] ${sr.document.title} - ${sr.document.org.name}`,
+    html,
+  })
+}
+
+/** Send reminder email to a single signer */
+export async function sendReminderToSigner(signRequestId: string) {
+  const config = useRuntimeConfig()
+
+  const sr = await prisma.signRequest.findUnique({
+    where: { id: signRequestId },
+    include: {
+      document: {
+        include: {
+          org: { select: { name: true, primaryColor: true } },
+        },
+      },
+    },
+  })
+
+  if (!sr || sr.status !== 'pending') return
+
+  const signUrl = `${config.public.appUrl}/sign/${sr.token}`
+  const html = buildReminderEmail({
+    signerName: sr.signerName,
+    documentTitle: sr.document.title,
+    signUrl,
+    orgName: sr.document.org.name,
+    orgColor: sr.document.org.primaryColor || undefined,
+  })
+
+  await sendEmail({
+    to: sr.signerEmail,
+    subject: `[리마인더] ${sr.document.title} - ${sr.document.org.name}`,
+    html,
+  })
 }
 
 /** Send completed document to all participants */

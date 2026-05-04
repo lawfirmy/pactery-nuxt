@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { prisma } from './db'
 
-type EventType = 'created' | 'sent' | 'opened' | 'signed' | 'rejected' | 'downloaded' | 'printed' | 'expired' | 'reminder_sent'
+type EventType = 'created' | 'sent' | 'opened' | 'signed' | 'rejected' | 'downloaded' | 'printed' | 'expired' | 'reminder_sent' | 'signer_added' | 'signer_removed'
 type ActorType = 'system' | 'user' | 'signer'
 
 interface AuditParams {

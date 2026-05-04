@@ -12,15 +12,15 @@ const addSignerSchema = z.object({
 export default defineEventHandler(async (event) => {
   const orgId = getRouterParam(event, 'orgId')!
   const docId = getRouterParam(event, 'docId')!
-  await requireOrgRole(event, orgId, 'member')
+  const { auth } = await requireOrgRole(event, orgId, 'member')
 
   const body = await readValidatedBody(event, addSignerSchema.parse)
 
   const document = await prisma.document.findFirst({
-    where: { id: docId, orgId, status: 'draft' },
+    where: { id: docId, orgId, status: { in: ['draft', 'pending'] } },
   })
   if (!document) {
-    throw createError({ statusCode: 404, statusMessage: 'Document not found or not in draft status' })
+    throw createError({ statusCode: 404, statusMessage: 'Document not found or not in editable status' })
   }
 
   // Auto-determine order index if not provided
@@ -41,6 +41,15 @@ export default defineEventHandler(async (event) => {
       signerPhone: body.signerPhone,
       orderIndex,
     },
+  })
+
+  await createAuditLog(event, {
+    documentId: docId,
+    signRequestId: signRequest.id,
+    eventType: 'signer_added',
+    actorType: 'user',
+    actorId: auth.userId,
+    metadata: { signerName: body.signerName, signerEmail: body.signerEmail },
   })
 
   return signRequest
