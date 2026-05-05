@@ -9,40 +9,36 @@ interface EmailParams {
   }>
 }
 
-/** Send email via AWS SES (or fallback to console in dev) */
+/** Send email via Resend API (or fallback to console in dev) */
 export async function sendEmail(params: EmailParams) {
   const config = useRuntimeConfig()
 
-  if (!config.s3AccessKey || process.env.NODE_ENV === 'development') {
+  if (!config.resendApiKey || process.env.NODE_ENV === 'development') {
     console.log(`[EMAIL] To: ${params.to} | Subject: ${params.subject}`)
     console.log(`[EMAIL] Body preview: ${params.html.substring(0, 200)}...`)
     return { messageId: 'dev-' + Date.now() }
   }
 
-  // AWS SES v2
-  const { SESv2Client, SendEmailCommand } = await import('@aws-sdk/client-sesv2')
+  const { Resend } = await import('resend')
+  const resend = new Resend(config.resendApiKey)
 
-  const ses = new SESv2Client({
-    region: config.sesRegion,
-    credentials: {
-      accessKeyId: config.s3AccessKey,
-      secretAccessKey: config.s3SecretKey,
-    },
+  const result = await resend.emails.send({
+    from: config.resendFromEmail,
+    to: [params.to],
+    subject: params.subject,
+    html: params.html,
+    attachments: params.attachments?.map((a) => ({
+      filename: a.filename,
+      content: a.content,
+      content_type: a.contentType,
+    })),
   })
 
-  const command = new SendEmailCommand({
-    FromEmailAddress: config.sesFromEmail,
-    Destination: { ToAddresses: [params.to] },
-    Content: {
-      Simple: {
-        Subject: { Data: params.subject },
-        Body: { Html: { Data: params.html } },
-      },
-    },
-  })
+  if (result.error) {
+    throw new Error(`Resend error: ${result.error.message}`)
+  }
 
-  const result = await ses.send(command)
-  return { messageId: result.MessageId }
+  return { messageId: result.data?.id }
 }
 
 /** Generate sign request email HTML */

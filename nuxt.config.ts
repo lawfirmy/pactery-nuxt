@@ -17,9 +17,9 @@ export default defineNuxtConfig({
     s3AccessKey: process.env.S3_ACCESS_KEY || '',
     s3SecretKey: process.env.S3_SECRET_KEY || '',
 
-    // Email (SES)
-    sesRegion: process.env.SES_REGION || 'ap-northeast-2',
-    sesFromEmail: process.env.SES_FROM_EMAIL || 'noreply@pactery.com',
+    // Email (Resend)
+    resendApiKey: process.env.RESEND_API_KEY || '',
+    resendFromEmail: process.env.RESEND_FROM_EMAIL || 'noreply@pactery.com',
 
     // OAuth
     googleClientId: process.env.GOOGLE_CLIENT_ID || '',
