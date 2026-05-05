@@ -1,5 +1,5 @@
 <template>
-  <div class="pdf-viewer">
+  <div class="pdf-viewer max-w-full overflow-hidden">
     <!-- Toolbar -->
     <div class="flex items-center justify-between bg-gray-800 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-t-lg">
       <div class="flex items-center gap-1 sm:gap-2">
