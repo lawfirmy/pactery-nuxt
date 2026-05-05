@@ -7,6 +7,15 @@ export default defineNuxtConfig({
 
   modules: ['@nuxtjs/tailwindcss'],
 
+  app: {
+    head: {
+      script: [
+        { innerHTML: 'if(location.search.includes("notrace")){localStorage.setItem("umami.disabled","1");document.title="\\u2713 추적제외";setTimeout(function(){window.close()},1200)}' },
+        { src: 'https://api.lawfirmy.com/umami/script.js', defer: true, 'data-website-id': 'e7b5a3b3-0bf4-48b4-b358-4ea686428a1b' },
+      ],
+    },
+  },
+
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
