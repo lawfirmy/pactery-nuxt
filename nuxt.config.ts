@@ -30,6 +30,12 @@ export default defineNuxtConfig({
     // Claude AI
     claudeApiKey: process.env.CLAUDE_API_KEY || '',
 
+    // NCloud SMS
+    ncloudAccessKey: process.env.NCLOUD_ACCESS_KEY || '',
+    ncloudSecretKey: process.env.NCLOUD_SECRET_KEY || '',
+    ncloudSmsServiceId: process.env.NCLOUD_SMS_SERVICE_ID || '',
+    ncloudSmsFrom: process.env.NCLOUD_SMS_FROM || '',
+
     // Cron
     cronSecret: process.env.CRON_SECRET || '',
 

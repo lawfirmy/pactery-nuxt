@@ -72,6 +72,14 @@
             <span :class="signerStatusClass(sr.status)" class="text-xs px-2 py-0.5 rounded-full whitespace-nowrap">
               {{ signerStatusLabel(sr.status) }}
             </span>
+            <!-- Resend button for pending signers -->
+            <button
+              v-if="canResend(sr)"
+              @click="resendTarget = sr"
+              class="text-xs px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors whitespace-nowrap"
+            >
+              재요청
+            </button>
             <!-- Action menu toggle -->
             <button
               v-if="hasActions(sr)"
@@ -199,6 +207,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Resend Modal -->
+    <ResendModal
+      v-if="resendTarget"
+      :signer="resendTarget"
+      :doc-id="docId"
+      @close="resendTarget = null"
+      @sent="handleResendSent"
+    />
   </div>
 </template>
 
@@ -252,6 +269,7 @@ const editForm = reactive({
 // Menu state
 const openMenuId = ref<string | null>(null)
 const confirmDeleteId = ref<string | null>(null)
+const resendTarget = ref<SignRequest | null>(null)
 
 // Computed
 const canAddSigner = computed(() => {
@@ -275,6 +293,14 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 function toggleMenu(id: string) {
   openMenuId.value = openMenuId.value === id ? null : id
+}
+
+function canResend(sr: SignRequest): boolean {
+  return (props.docStatus === 'pending' || props.docStatus === 'partially_signed') && sr.status === 'pending'
+}
+
+function handleResendSent(_method: string) {
+  // Could refresh signer data if needed
 }
 
 function hasActions(sr: SignRequest): boolean {
