@@ -190,7 +190,7 @@ export async function sendCompletedNotifications(documentId: string) {
   }
 }
 
-function formatEventType(type: string): string {
+export function formatEventType(type: string): string {
   const map: Record<string, string> = {
     created: '문서 생성',
     sent: '서명 요청 발송',
@@ -203,7 +203,7 @@ function formatEventType(type: string): string {
   return map[type] || type
 }
 
-function getActorName(log: any): string {
+export function getActorName(log: any): string {
   if (log.metadata && typeof log.metadata === 'object') {
     return (log.metadata as any).signerName || (log.metadata as any).signerEmail || log.actorId || 'System'
   }
