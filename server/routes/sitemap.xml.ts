@@ -1,4 +1,5 @@
-import { blogPosts } from '../../app/data/blog-posts'
+import { readdirSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 export default defineEventHandler((event) => {
   const baseUrl = process.env.APP_URL || 'https://pactery.com'
@@ -10,12 +11,20 @@ export default defineEventHandler((event) => {
     { url: '/blog', changefreq: 'daily', priority: '0.9', lastmod: '2026-04-27' },
   ]
 
-  const blogPages = blogPosts.map(post => ({
-    url: `/blog/${post.slug}`,
-    changefreq: 'monthly',
-    priority: '0.8',
-    lastmod: post.updatedAt || post.publishedAt,
-  }))
+  // Read blog post slugs from filesystem (avoids import.meta.glob in server context)
+  let blogPages: Array<{ url: string; changefreq: string; priority: string; lastmod: string }> = []
+  try {
+    const postsDir = resolve(process.cwd(), 'app/data/posts')
+    const files = readdirSync(postsDir).filter(f => f.endsWith('.ts'))
+    blogPages = files.map(f => ({
+      url: `/blog/${f.replace('.ts', '')}`,
+      changefreq: 'monthly',
+      priority: '0.8',
+      lastmod: '2026-04-27',
+    }))
+  } catch {
+    // posts dir not found in production — skip blog pages
+  }
 
   const allPages = [...staticPages, ...blogPages]
 

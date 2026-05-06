@@ -78,7 +78,9 @@ export async function uploadFile(
 }
 
 export async function getFile(key: string): Promise<Buffer> {
-  if (useLocalStorage()) return localGetFile(key)
+  const isLocal = useLocalStorage()
+  console.log(`[storage] getFile key=${key}, useLocal=${isLocal}, s3Bucket=${useRuntimeConfig().s3Bucket || '(empty)'}`)
+  if (isLocal) return localGetFile(key)
 
   const config = useRuntimeConfig()
   const response = await getS3Client().send(new GetObjectCommand({

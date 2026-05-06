@@ -12,9 +12,13 @@ export default defineEventHandler(async (event) => {
   const orgId = getRouterParam(event, 'orgId')!
   const docId = getRouterParam(event, 'docId')!
   const signRequestId = getRouterParam(event, 'signRequestId')!
+
+  console.log(`[RESEND] === 서명 재요청 시작 === orgId=${orgId}, docId=${docId}, signRequestId=${signRequestId}`)
+
   const { auth } = await requireOrgRole(event, orgId, 'member')
 
   const body = await readValidatedBody(event, resendSchema.parse)
+  console.log(`[RESEND] method=${body.method}, email=${body.email || '(none)'}, phone=${body.phone || '(none)'}, userId=${auth.userId}`)
 
   const document = await prisma.document.findFirst({
     where: { id: docId, orgId, status: { in: ['pending', 'partially_signed'] } },
@@ -62,9 +66,12 @@ export default defineEventHandler(async (event) => {
       metadata: { signerEmail: targetEmail, type: 'resend_email' },
     })
 
-    sendIndividualSignRequest(signRequestId).catch((err) => {
-      console.error(`Failed to resend email to ${targetEmail}:`, err)
-    })
+    console.log(`[RESEND] 이메일 발송 시작 → targetEmail=${targetEmail}, signRequestId=${signRequestId}`)
+    sendIndividualSignRequest(signRequestId)
+      .then(() => console.log(`[RESEND] 이메일 발송 완료 → ${targetEmail}`))
+      .catch((err) => {
+        console.error(`[RESEND] 이메일 발송 실패 → ${targetEmail}:`, err)
+      })
   } else if (body.method === 'sms') {
     const targetPhone = body.phone || signRequest.signerPhone
     if (!targetPhone) {
@@ -99,5 +106,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 501, statusMessage: `${body.method === 'kakao' ? '카카오톡' : '전화'} 발송은 준비 중입니다` })
   }
 
+  console.log(`[RESEND] === 서명 재요청 응답 반환 (method=${body.method}) ===`)
   return { success: true }
 })
