@@ -218,8 +218,9 @@ useHead({ title: '문서함 - Pactery' })
 const { fetchDocuments, createDocument, duplicateDocument, orgFetch } = useOrganization()
 const toast = useToast()
 
+const route = useRoute()
 const search = ref('')
-const statusFilter = ref('')
+const statusFilter = ref((route.query.status as string) || '')
 const page = ref(1)
 const loading = ref(true)
 const documents = ref<any[]>([])
@@ -233,6 +234,11 @@ const allSelected = computed(() => documents.value.length > 0 && selectedIds.val
 const someSelected = computed(() => selectedIds.value.length > 0)
 
 onMounted(() => loadDocuments())
+
+watch(statusFilter, () => {
+  page.value = 1
+  loadDocuments()
+})
 
 async function loadDocuments() {
   loading.value = true

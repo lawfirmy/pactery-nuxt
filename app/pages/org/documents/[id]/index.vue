@@ -2,6 +2,26 @@
   <div class="max-w-6xl mx-auto py-8 px-4">
     <div v-if="loading" class="text-center py-20 text-gray-400">불러오는 중...</div>
 
+    <div v-else-if="error" class="text-center py-20">
+      <div class="inline-flex flex-col items-center gap-4">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H10m9.364-7.364A9 9 0 1112 3a9 9 0 017.364 7.636z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-gray-700 mb-1">문서를 불러올 수 없습니다</p>
+          <p class="text-sm text-gray-500">{{ errorMessage }}</p>
+        </div>
+        <NuxtLink
+          to="/auth/login"
+          class="mt-2 px-6 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+        >
+          로그인하기
+        </NuxtLink>
+      </div>
+    </div>
+
     <template v-else-if="doc">
       <!-- Header -->
       <div class="flex items-start justify-between mb-6">
@@ -142,6 +162,8 @@ const toast = useToast()
 const loading = ref(true)
 const doc = ref<any>(null)
 const pdfData = ref<ArrayBuffer | null>(null)
+const error = ref(false)
+const errorMessage = ref('')
 
 onMounted(async () => {
   try {
@@ -150,8 +172,14 @@ onMounted(async () => {
     if (doc.value.originalFileKey) {
       pdfData.value = await fetchPdfBuffer(docId)
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error('Failed to load document:', e)
+    error.value = true
+    if (e?.message?.includes('No organization selected') || e?.statusCode === 401) {
+      errorMessage.value = '로그인하셔야 내용을 볼 수 있습니다.'
+    } else {
+      errorMessage.value = '문서를 불러오는 중 오류가 발생했습니다.'
+    }
   } finally {
     loading.value = false
   }

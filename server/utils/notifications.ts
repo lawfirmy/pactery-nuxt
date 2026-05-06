@@ -46,6 +46,8 @@ export async function sendSignRequestNotifications(documentId: string) {
 export async function sendIndividualSignRequest(signRequestId: string) {
   const config = useRuntimeConfig()
 
+  console.log(`[NOTIFY] sendIndividualSignRequest called for signRequestId: ${signRequestId}`)
+
   const sr = await prisma.signRequest.findUnique({
     where: { id: signRequestId },
     include: {
@@ -58,7 +60,12 @@ export async function sendIndividualSignRequest(signRequestId: string) {
     },
   })
 
-  if (!sr || sr.status !== 'pending') return
+  if (!sr || sr.status !== 'pending') {
+    console.log(`[NOTIFY] SignRequest not found or not pending. Found: ${!!sr}, status: ${sr?.status}`)
+    return
+  }
+
+  console.log(`[NOTIFY] Sending email to: ${sr.signerEmail}, signer: ${sr.signerName}, doc: ${sr.document.title}`)
 
   const signUrl = `${config.public.appUrl}/sign/${sr.token}`
   const html = buildSignRequestEmail({

@@ -12,18 +12,18 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white rounded-xl shadow-sm p-5">
+      <NuxtLink to="/org/documents" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">
         <p class="text-sm text-gray-500">전체 문서</p>
         <p class="text-2xl font-bold mt-1">{{ stats?.totalDocuments ?? '-' }}</p>
-      </div>
-      <div class="bg-white rounded-xl shadow-sm p-5">
+      </NuxtLink>
+      <NuxtLink to="/org/documents" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">
         <p class="text-sm text-gray-500">이번 달</p>
         <p class="text-2xl font-bold mt-1">{{ stats?.monthlyDocuments ?? '-' }}</p>
-      </div>
-      <div class="bg-white rounded-xl shadow-sm p-5">
+      </NuxtLink>
+      <NuxtLink to="/org/documents?status=pending" class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">
         <p class="text-sm text-gray-500">서명 대기</p>
         <p class="text-2xl font-bold mt-1 text-yellow-600">{{ stats?.statusBreakdown?.pending ?? 0 }}</p>
-      </div>
+      </NuxtLink>
       <div class="bg-white rounded-xl shadow-sm p-5">
         <p class="text-sm text-gray-500">사용량</p>
         <p class="text-2xl font-bold mt-1">
@@ -38,13 +38,18 @@
       <div class="bg-white rounded-xl shadow-sm p-6">
         <h2 class="font-semibold mb-4">문서 상태</h2>
         <div class="space-y-3">
-          <div v-for="(count, status) in stats?.statusBreakdown" :key="status" class="flex items-center justify-between">
+          <NuxtLink
+            v-for="(count, status) in stats?.statusBreakdown"
+            :key="status"
+            :to="`/org/documents?status=${status}`"
+            class="flex items-center justify-between hover:bg-gray-50 rounded-lg px-2 py-1 -mx-2 transition-colors"
+          >
             <div class="flex items-center gap-2">
               <span :class="dotColor(status as string)" class="w-2 h-2 rounded-full"></span>
               <span class="text-sm text-gray-600">{{ statusLabel(status as string) }}</span>
             </div>
             <span class="text-sm font-medium">{{ count }}건</span>
-          </div>
+          </NuxtLink>
         </div>
       </div>
 

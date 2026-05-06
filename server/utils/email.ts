@@ -13,32 +13,42 @@ interface EmailParams {
 export async function sendEmail(params: EmailParams) {
   const config = useRuntimeConfig()
 
+  console.log(`[EMAIL] Sending to: ${params.to} | Subject: ${params.subject} | From: ${config.resendFromEmail}`)
+
   if (!config.resendApiKey || process.env.NODE_ENV === 'development') {
-    console.log(`[EMAIL] To: ${params.to} | Subject: ${params.subject}`)
+    console.log(`[EMAIL] DEV MODE - not actually sending. API key present: ${!!config.resendApiKey}`)
     console.log(`[EMAIL] Body preview: ${params.html.substring(0, 200)}...`)
     return { messageId: 'dev-' + Date.now() }
   }
 
-  const { Resend } = await import('resend')
-  const resend = new Resend(config.resendApiKey)
+  try {
+    const { Resend } = await import('resend')
+    const resend = new Resend(config.resendApiKey)
 
-  const result = await resend.emails.send({
-    from: config.resendFromEmail,
-    to: [params.to],
-    subject: params.subject,
-    html: params.html,
-    attachments: params.attachments?.map((a) => ({
-      filename: a.filename,
-      content: a.content,
-      content_type: a.contentType,
-    })),
-  })
+    console.log(`[EMAIL] Calling Resend API...`)
+    const result = await resend.emails.send({
+      from: config.resendFromEmail,
+      to: [params.to],
+      subject: params.subject,
+      html: params.html,
+      attachments: params.attachments?.map((a) => ({
+        filename: a.filename,
+        content: a.content,
+        content_type: a.contentType,
+      })),
+    })
 
-  if (result.error) {
-    throw new Error(`Resend error: ${result.error.message}`)
+    if (result.error) {
+      console.error(`[EMAIL] Resend API error:`, result.error)
+      throw new Error(`Resend error: ${result.error.message}`)
+    }
+
+    console.log(`[EMAIL] Sent successfully. messageId: ${result.data?.id}`)
+    return { messageId: result.data?.id }
+  } catch (err) {
+    console.error(`[EMAIL] Failed to send email to ${params.to}:`, err)
+    throw err
   }
-
-  return { messageId: result.data?.id }
 }
 
 /** Generate sign request email HTML */
