@@ -1,194 +1,260 @@
 <template>
   <div>
     <!-- Hero -->
-    <section class="bg-white">
-      <div class="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        <div class="text-center">
-          <!-- A/B 뱃지 -->
-          <div v-if="hero.badge" class="mb-4 inline-flex items-center">
-            <span class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full tracking-wide">
-              {{ hero.badge }}
-            </span>
+    <section class="relative overflow-hidden bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800">
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE4YzAtOS45NC04LjA2LTE4LTE4LTE4UzAgOC4wNiAwIDE4IDE4IDM2IDE4IDM2IDI4LjA2IDM2IDM2IDE4eiIvPjwvZz48L2c+PC9zdmc+')] opacity-40"></div>
+      <div class="relative max-w-7xl mx-auto px-4 py-20 sm:py-28 lg:py-36 sm:px-6 lg:px-8">
+        <div class="text-center max-w-4xl mx-auto">
+          <div v-if="hero.badge" class="mb-6 inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
+            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span class="text-sm text-brand-200 font-medium">{{ hero.badge }}</span>
           </div>
 
-          <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
             {{ heroHeadlineParts.prefix
-            }}<span class="text-blue-600">{{ heroHeadlineParts.highlight }}</span>{{ heroHeadlineParts.suffix }}
+            }}<span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-indigo-300">{{ heroHeadlineParts.highlight }}</span>{{ heroHeadlineParts.suffix }}
           </h1>
-          <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500">
+          <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-brand-200/80 leading-relaxed">
             {{ hero.subtext }}
           </p>
-          <div class="mt-10 flex justify-center gap-4">
+          <div class="mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <NuxtLink
               to="/auth/register"
-              class="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+              class="px-8 py-3.5 bg-white text-brand-900 font-semibold rounded-xl hover:bg-brand-50 transition shadow-lg shadow-white/10"
               @click="recordClick"
             >
               {{ hero.cta }}
             </NuxtLink>
             <NuxtLink
               to="/my"
-              class="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+              class="px-8 py-3.5 border border-white/20 text-white font-medium rounded-xl hover:bg-white/10 backdrop-blur-sm transition"
             >
               내 서명 조회
             </NuxtLink>
           </div>
-          <p class="mt-4 text-sm text-gray-400">
-            월 5건 무료 | 신용카드 불필요
+          <p class="mt-6 text-sm text-brand-300/60">
+            월 5건 무료 &middot; 신용카드 불필요 &middot; 30초 만에 시작
           </p>
         </div>
       </div>
     </section>
 
-    <!-- Features -->
-    <section class="bg-gray-50 py-20">
+    <!-- Event Banner -->
+    <section class="bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 py-4 sm:py-5">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">왜 Pactery인가?</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <span class="text-2xl">&#x1F50D;</span>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-white">
+          <div class="flex items-center gap-3">
+            <span class="hidden sm:inline-flex items-center justify-center w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full text-lg shrink-0">
+              &#127881;
+            </span>
+            <div class="text-center sm:text-left">
+              <p class="font-bold text-base sm:text-lg leading-tight">
+                <span class="sm:hidden">&#127881; </span>오픈 기념 이벤트! 전자서명 10건 무료
+              </p>
+              <p class="text-sm text-white/80 mt-0.5">이벤트 기간 중 가입하시면 모든 사용자에게 전자서명 10건을 무료로 드립니다</p>
             </div>
-            <h3 class="text-lg font-semibold mb-2">3초 검색</h3>
-            <p class="text-gray-500">모든 계약서를 제목, 서명자, 사건번호로 즉시 검색. 더 이상 헤매지 마세요.</p>
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <span class="text-2xl">&#x1F512;</span>
-            </div>
-            <h3 class="text-lg font-semibold mb-2">법적 효력</h3>
-            <p class="text-gray-500">PKI 디지털 서명, SHA-256 해시, 감사추적인증서로 위변조 불가.</p>
+          <NuxtLink
+            to="/auth/register"
+            class="shrink-0 px-6 py-2.5 bg-white text-orange-600 font-semibold rounded-xl hover:bg-orange-50 transition shadow-lg shadow-orange-700/20 text-sm"
+          >
+            무료로 시작하기
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Bar -->
+    <section class="bg-white border-b border-gray-100 py-8">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-10 text-gray-400">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+            <span class="text-sm font-medium">전자서명법 준수</span>
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <span class="text-2xl">&#x1F465;</span>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+            <span class="text-sm font-medium">SHA-256 암호화</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+            <span class="text-sm font-medium">감사추적인증서</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
+            <span class="text-sm font-medium">모바일 서명</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="bg-white py-20 sm:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-3">Features</p>
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">왜 Pactery인가?</h2>
+          <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">변호사와 법률사무소를 위해 설계된 전자서명 솔루션</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+          <div class="group bg-gray-50 hover:bg-brand-50 p-8 rounded-2xl transition-colors duration-200">
+            <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-brand-200 transition-colors">
+              <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
             </div>
-            <h3 class="text-lg font-semibold mb-2">팀 협업</h3>
-            <p class="text-gray-500">회사 단위 문서함. 팀원별 역할/권한 관리. 누가 뭘 보냈는지 한눈에.</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">3초 검색</h3>
+            <p class="text-gray-500 leading-relaxed">모든 계약서를 제목, 서명자, 사건번호로 즉시 검색. 더 이상 헤매지 마세요.</p>
+          </div>
+          <div class="group bg-gray-50 hover:bg-green-50 p-8 rounded-2xl transition-colors duration-200">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-green-200 transition-colors">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">법적 효력</h3>
+            <p class="text-gray-500 leading-relaxed">PKI 디지털 서명, SHA-256 해시, 감사추적인증서로 위변조 불가.</p>
+          </div>
+          <div class="group bg-gray-50 hover:bg-purple-50 p-8 rounded-2xl transition-colors duration-200">
+            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-purple-200 transition-colors">
+              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">팀 협업</h3>
+            <p class="text-gray-500 leading-relaxed">회사 단위 문서함. 팀원별 역할/권한 관리. 누가 뭘 보냈는지 한눈에.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="bg-gray-50 py-20 sm:py-24">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-3">How it works</p>
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">3분이면 서명 완료</h2>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-8 sm:gap-12">
+          <div class="text-center">
+            <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-600/30">1</div>
+            <h3 class="font-semibold text-gray-900 mb-2">문서 업로드</h3>
+            <p class="text-sm text-gray-500">PDF를 업로드하고 서명 위치를 지정하세요.</p>
+          </div>
+          <div class="text-center">
+            <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-600/30">2</div>
+            <h3 class="font-semibold text-gray-900 mb-2">서명자 초대</h3>
+            <p class="text-sm text-gray-500">이메일 또는 카카오톡으로 서명 요청을 보내세요.</p>
+          </div>
+          <div class="text-center">
+            <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-600/30">3</div>
+            <h3 class="font-semibold text-gray-900 mb-2">서명 완료</h3>
+            <p class="text-sm text-gray-500">감사추적인증서와 함께 서명 완료된 문서를 받으세요.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Pricing -->
-    <section class="bg-white py-20">
+    <section class="bg-white py-20 sm:py-24">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900">업계 최저가, 기능은 최고</h2>
-          <p class="mt-3 text-gray-500">타사 대비 최대 80% 저렴합니다. 추가 건당 990원.</p>
+        <div class="text-center mb-16">
+          <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-3">Pricing</p>
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">업계 최저가, 기능은 최고</h2>
+          <p class="mt-4 text-lg text-gray-500">타사 대비 최대 80% 저렴합니다. 추가 건당 990원.</p>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           <!-- Free -->
-          <div class="border rounded-xl p-6">
-            <h3 class="font-semibold text-lg">Free</h3>
-            <p class="text-3xl font-bold mt-2">0<span class="text-base font-normal text-gray-500">원/월</span></p>
-            <ul class="mt-4 space-y-2 text-sm text-gray-600">
-              <li>월 5건</li>
-              <li>1인</li>
-              <li>템플릿 3개</li>
-              <li>이메일 · 카카오톡 전송</li>
-              <li>대면서명</li>
-              <li>감사추적인증서</li>
-              <li>문서 위변조 확인</li>
+          <div class="bg-white border border-gray-200 rounded-2xl p-7 hover:shadow-lg transition-shadow duration-200">
+            <h3 class="font-semibold text-lg text-gray-900">Free</h3>
+            <p class="text-4xl font-bold mt-3">0<span class="text-base font-normal text-gray-400">원/월</span></p>
+            <ul class="mt-6 space-y-3 text-sm text-gray-600">
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>월 5건</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>1인</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>템플릿 3개</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>이메일 &middot; 카카오톡 전송</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>감사추적인증서</li>
             </ul>
-            <NuxtLink to="/auth/register" class="mt-6 block text-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm">
+            <NuxtLink to="/auth/register" class="mt-8 block text-center px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition text-sm font-medium">
               무료로 시작
             </NuxtLink>
           </div>
           <!-- Starter -->
-          <div class="border-2 border-blue-600 rounded-xl p-6 relative">
-            <span class="absolute -top-3 left-4 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">인기</span>
+          <div class="relative bg-brand-600 text-white rounded-2xl p-7 shadow-xl shadow-brand-600/20 ring-2 ring-brand-600">
+            <span class="absolute -top-3 left-6 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">인기</span>
             <h3 class="font-semibold text-lg">Starter</h3>
-            <p class="text-3xl font-bold mt-2 text-blue-600">19,900<span class="text-base font-normal text-gray-500">원/월</span></p>
-            <p class="text-xs text-green-600 font-medium mt-1">타사 팀 요금제 대비 64% 절감</p>
-            <ul class="mt-4 space-y-2 text-sm text-gray-600">
-              <li><strong>월 50건</strong></li>
-              <li><strong>팀원 5명</strong></li>
-              <li>무제한 템플릿</li>
-              <li>사건관리 연동</li>
-              <li>링크서명 · 예약전송</li>
-              <li>서명 순서 · CC 지정</li>
-              <li>슬랙 · 구글드라이브 연동</li>
-              <li>계약 리마인더</li>
-              <li>법률 서식 제공</li>
+            <p class="text-4xl font-bold mt-3">19,900<span class="text-base font-normal text-brand-200">원/월</span></p>
+            <p class="text-xs text-brand-200 font-medium mt-1">타사 팀 요금제 대비 64% 절감</p>
+            <ul class="mt-6 space-y-3 text-sm text-brand-100">
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg><strong class="text-white">월 50건</strong></li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg><strong class="text-white">팀원 5명</strong></li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>무제한 템플릿</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>사건관리 연동</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-brand-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>슬랙 &middot; 구글드라이브 연동</li>
             </ul>
-            <NuxtLink to="/auth/register" class="mt-6 block text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+            <NuxtLink to="/auth/register" class="mt-8 block text-center px-4 py-2.5 bg-white text-brand-700 rounded-xl hover:bg-brand-50 transition text-sm font-semibold">
               무료체험 시작
             </NuxtLink>
           </div>
           <!-- Business -->
-          <div class="border rounded-xl p-6">
-            <h3 class="font-semibold text-lg">Business</h3>
-            <p class="text-3xl font-bold mt-2">39,900<span class="text-base font-normal text-gray-500">원/월</span></p>
+          <div class="bg-white border border-gray-200 rounded-2xl p-7 hover:shadow-lg transition-shadow duration-200">
+            <h3 class="font-semibold text-lg text-gray-900">Business</h3>
+            <p class="text-4xl font-bold mt-3">39,900<span class="text-base font-normal text-gray-400">원/월</span></p>
             <p class="text-xs text-green-600 font-medium mt-1">타사 프로 요금제 대비 55% 절감</p>
-            <ul class="mt-4 space-y-2 text-sm text-gray-600">
-              <li><strong>월 200건</strong></li>
-              <li><strong>팀원 15명</strong></li>
-              <li>Starter 전체 포함</li>
-              <li>대량전송 · API 연동</li>
-              <li>이메일/카카오 브랜딩</li>
-              <li>내부결재</li>
-              <li>멤버별 이용량 조회</li>
-              <li>고급 입력란 · 데이터 추출</li>
-              <li>구글시트 · 노션 연동</li>
+            <ul class="mt-6 space-y-3 text-sm text-gray-600">
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg><strong>월 200건</strong></li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg><strong>팀원 15명</strong></li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>Starter 전체 포함</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>대량전송 &middot; API 연동</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>이메일/카카오 브랜딩</li>
             </ul>
-            <NuxtLink to="/auth/register" class="mt-6 block text-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm">
+            <NuxtLink to="/auth/register" class="mt-8 block text-center px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition text-sm font-medium">
               무료체험 시작
             </NuxtLink>
           </div>
           <!-- Enterprise -->
-          <div class="border rounded-xl p-6">
-            <h3 class="font-semibold text-lg">Enterprise</h3>
-            <p class="text-3xl font-bold mt-2">별도<span class="text-base font-normal text-gray-500"> 상담</span></p>
-            <ul class="mt-4 space-y-2 text-sm text-gray-600">
-              <li><strong>무제한 건수</strong></li>
-              <li><strong>팀원 무제한</strong></li>
-              <li>Business 전체 포함</li>
-              <li>SSO (Single Sign-On)</li>
-              <li>IP 접근 제어</li>
-              <li>2단계 인증</li>
-              <li>전용 담당자 배정</li>
-              <li>SLA 보장</li>
-              <li>온프레미스 설치 가능</li>
+          <div class="bg-white border border-gray-200 rounded-2xl p-7 hover:shadow-lg transition-shadow duration-200">
+            <h3 class="font-semibold text-lg text-gray-900">Enterprise</h3>
+            <p class="text-4xl font-bold mt-3">별도<span class="text-base font-normal text-gray-400"> 상담</span></p>
+            <ul class="mt-6 space-y-3 text-sm text-gray-600">
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg><strong>무제한 건수</strong></li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg><strong>팀원 무제한</strong></li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>SSO &middot; IP 접근 제어</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>전용 담당자 &middot; SLA</li>
+              <li class="flex items-start gap-2"><svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" /></svg>온프레미스 설치 가능</li>
             </ul>
-            <a href="mailto:contact@pactery.com" class="mt-6 block text-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm">
+            <a href="mailto:contact@pactery.com" class="mt-8 block text-center px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition text-sm font-medium">
               도입 문의
             </a>
           </div>
         </div>
 
         <!-- 경쟁사 비교 하이라이트 -->
-        <div class="mt-16 max-w-3xl mx-auto">
+        <div class="mt-20 max-w-3xl mx-auto">
           <h3 class="text-xl font-bold text-center text-gray-900 mb-8">같은 기능, 확 다른 가격</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-6 py-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
               <div>
                 <p class="font-medium text-gray-900">팀 요금제 (30건, 3명)</p>
                 <p class="text-sm text-gray-500">모두싸인 TEAM 기준</p>
               </div>
               <div class="text-right">
                 <p class="text-gray-400 line-through text-sm">55,000원/월</p>
-                <p class="text-blue-600 font-bold">19,900원/월 <span class="text-xs text-green-600">(50건, 5명)</span></p>
+                <p class="text-brand-600 font-bold">19,900원/월 <span class="text-xs text-green-600">(50건, 5명)</span></p>
               </div>
             </div>
-            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-6 py-4">
+            <div class="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
               <div>
                 <p class="font-medium text-gray-900">프로 요금제 (30건, 5명)</p>
                 <p class="text-sm text-gray-500">모두싸인 TEAM PRO 기준</p>
               </div>
               <div class="text-right">
                 <p class="text-gray-400 line-through text-sm">88,000원/월</p>
-                <p class="text-blue-600 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
+                <p class="text-brand-600 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
               </div>
             </div>
-            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-6 py-4">
+            <div class="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
               <div>
                 <p class="font-medium text-gray-900">비즈니스 (100건, 무제한)</p>
                 <p class="text-sm text-gray-500">eformsign Business 기준</p>
               </div>
               <div class="text-right">
                 <p class="text-gray-400 line-through text-sm">40,000원/월</p>
-                <p class="text-blue-600 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
+                <p class="text-brand-600 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
               </div>
             </div>
           </div>
@@ -196,81 +262,77 @@
       </div>
     </section>
 
-    <!-- 전체 기능 비교표 -->
-    <section class="bg-gray-50 py-20">
+    <!-- Feature Comparison Table -->
+    <section class="bg-gray-50 py-20 sm:py-24">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">요금제별 전체 기능 비교</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm border-collapse">
+        <div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-100">
+          <table class="w-full text-sm">
             <thead>
-              <tr class="border-b-2 border-gray-200">
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">기능</th>
-                <th class="text-center py-3 px-2 font-semibold text-gray-700">Free</th>
-                <th class="text-center py-3 px-2 font-semibold text-blue-600">Starter</th>
-                <th class="text-center py-3 px-2 font-semibold text-gray-700">Business</th>
-                <th class="text-center py-3 px-2 font-semibold text-gray-700">Enterprise</th>
+              <tr class="border-b-2 border-gray-100">
+                <th class="text-left py-4 px-5 font-semibold text-gray-700">기능</th>
+                <th class="text-center py-4 px-3 font-semibold text-gray-700 w-24">Free</th>
+                <th class="text-center py-4 px-3 font-semibold text-brand-600 w-24 bg-brand-50/50">Starter</th>
+                <th class="text-center py-4 px-3 font-semibold text-gray-700 w-24">Business</th>
+                <th class="text-center py-4 px-3 font-semibold text-gray-700 w-24">Enterprise</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
-              <tr class="bg-gray-100"><td colspan="5" class="py-2 px-4 font-semibold text-gray-800">핵심 기능</td></tr>
-              <tr><td class="py-2 px-4">서명 요청</td><td class="text-center">월 5건</td><td class="text-center">월 50건</td><td class="text-center">월 200건</td><td class="text-center">무제한</td></tr>
-              <tr><td class="py-2 px-4">멤버 (계정)</td><td class="text-center">1명</td><td class="text-center">5명</td><td class="text-center">15명</td><td class="text-center">무제한</td></tr>
-              <tr><td class="py-2 px-4">문서당 서명자</td><td class="text-center">최대 5명</td><td class="text-center">최대 30명</td><td class="text-center">최대 30명</td><td class="text-center">최대 30명</td></tr>
-              <tr><td class="py-2 px-4">이메일 · 카카오톡 전송</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">대면서명</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">링크서명</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">대량전송</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">실시간 고객 지원</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">전용 담당자</td></tr>
+            <tbody class="divide-y divide-gray-50">
+              <tr class="bg-gray-50"><td colspan="5" class="py-2.5 px-5 font-semibold text-gray-800 text-xs uppercase tracking-wider">핵심 기능</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">서명 요청</td><td class="text-center text-gray-500">월 5건</td><td class="text-center bg-brand-50/30 font-medium text-brand-700">월 50건</td><td class="text-center text-gray-500">월 200건</td><td class="text-center text-gray-500">무제한</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">멤버 (계정)</td><td class="text-center text-gray-500">1명</td><td class="text-center bg-brand-50/30 font-medium text-brand-700">5명</td><td class="text-center text-gray-500">15명</td><td class="text-center text-gray-500">무제한</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">이메일 &middot; 카카오톡 전송</td><td class="text-center text-green-500">&#10003;</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">대면서명</td><td class="text-center text-green-500">&#10003;</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">링크서명</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">대량전송</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-gray-300">-</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
 
-              <tr class="bg-gray-100"><td colspan="5" class="py-2 px-4 font-semibold text-gray-800">계약 설정 및 체결</td></tr>
-              <tr><td class="py-2 px-4">템플릿</td><td class="text-center">3개</td><td class="text-center">무제한</td><td class="text-center">무제한</td><td class="text-center">무제한</td></tr>
-              <tr><td class="py-2 px-4">문서당 첨부파일</td><td class="text-center">3개</td><td class="text-center">30개</td><td class="text-center">30개</td><td class="text-center">30개</td></tr>
-              <tr><td class="py-2 px-4">사인 · 도장 · 이니셜</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">법률 서식 제공</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">서명 순서 · 유효기간 지정</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">참조자(CC) · 메모</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">다국어 지원</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">예약 전송</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">고급 입력란 · 문서 편집</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">서명자 필드 사전입력</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
+              <tr class="bg-gray-50"><td colspan="5" class="py-2.5 px-5 font-semibold text-gray-800 text-xs uppercase tracking-wider">계약 설정 및 체결</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">템플릿</td><td class="text-center text-gray-500">3개</td><td class="text-center bg-brand-50/30 font-medium text-brand-700">무제한</td><td class="text-center text-gray-500">무제한</td><td class="text-center text-gray-500">무제한</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">사인 &middot; 도장 &middot; 이니셜</td><td class="text-center text-green-500">&#10003;</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">예약 전송</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">고급 입력란 &middot; 문서 편집</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-gray-300">-</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
 
-              <tr class="bg-gray-100"><td colspan="5" class="py-2 px-4 font-semibold text-gray-800">계약 관리</td></tr>
-              <tr><td class="py-2 px-4">대시보드 · 문서 검색</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">라벨 · 문서 자동 교부</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">사건관리 연동</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">계약 리마인더</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">문서 데이터 추출</td><td class="text-center">-</td><td class="text-center">기본</td><td class="text-center">정밀</td><td class="text-center">정밀</td></tr>
+              <tr class="bg-gray-50"><td colspan="5" class="py-2.5 px-5 font-semibold text-gray-800 text-xs uppercase tracking-wider">인증 &middot; 보안</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">감사추적인증서</td><td class="text-center text-green-500">&#10003;</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">SSO &middot; 2단계 인증</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-gray-300">-</td><td class="text-center text-gray-300">-</td><td class="text-center text-green-500">&#10003;</td></tr>
 
-              <tr class="bg-gray-100"><td colspan="5" class="py-2 px-4 font-semibold text-gray-800">조직 관리 · 브랜딩</td></tr>
-              <tr><td class="py-2 px-4">내부결재</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">멤버별 이용량 조회</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">이메일 · 카카오톡 브랜딩</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-
-              <tr class="bg-gray-100"><td colspan="5" class="py-2 px-4 font-semibold text-gray-800">인증 · 보안</td></tr>
-              <tr><td class="py-2 px-4">감사추적인증서</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">문서 위변조 확인 · 잠금</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">다양한 인증 수단</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">감사로그 (Audit Log)</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">IP 접근 제어</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">SSO · 2단계 인증</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td></tr>
-
-              <tr class="bg-gray-100"><td colspan="5" class="py-2 px-4 font-semibold text-gray-800">연동 서비스</td></tr>
-              <tr><td class="py-2 px-4">슬랙 알림</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">구글 드라이브 자동 백업</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">구글 시트 · 노션 연동</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">API 연동</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td><td class="text-center">&#10003;</td></tr>
-              <tr><td class="py-2 px-4">Zapier · Webhook</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center">&#10003;</td></tr>
+              <tr class="bg-gray-50"><td colspan="5" class="py-2.5 px-5 font-semibold text-gray-800 text-xs uppercase tracking-wider">연동 서비스</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">슬랙 알림</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
+              <tr><td class="py-3 px-5 text-gray-600">API 연동</td><td class="text-center text-gray-300">-</td><td class="text-center bg-brand-50/30 text-gray-300">-</td><td class="text-center text-green-500">&#10003;</td><td class="text-center text-green-500">&#10003;</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
+    <!-- CTA -->
+    <section class="bg-brand-600 py-16 sm:py-20">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-2xl sm:text-3xl font-bold text-white">지금 바로 시작하세요</h2>
+        <p class="mt-4 text-brand-200 text-lg">30초 만에 가입하고, 첫 서명을 보내보세요.</p>
+        <NuxtLink to="/auth/register" class="mt-8 inline-block px-8 py-3.5 bg-white text-brand-700 font-semibold rounded-xl hover:bg-brand-50 transition shadow-lg shadow-brand-700/20">
+          무료로 시작하기
+        </NuxtLink>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-400 py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p class="text-lg font-semibold text-white mb-2">Pactery</p>
-        <p class="text-sm">pactery.com | 전자서명법 준수 | 개인정보보호</p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>
+            <p class="text-lg font-bold text-white">Pactery</p>
+            <p class="text-sm mt-1">전자서명, 쉽고 빠르게</p>
+          </div>
+          <div class="flex items-center gap-6 text-sm">
+            <NuxtLink to="/blog" class="hover:text-white transition">블로그</NuxtLink>
+            <a href="mailto:contact@pactery.com" class="hover:text-white transition">문의</a>
+            <span>전자서명법 준수</span>
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+          &copy; {{ new Date().getFullYear() }} Pactery. All rights reserved.
+        </div>
       </div>
     </footer>
   </div>
@@ -292,7 +354,6 @@ interface AbTest {
   variants: Variant[]
 }
 
-// 기본 variant (A/B 테스트 로드 실패 시 폴백)
 const DEFAULT_HERO: Variant = {
   id: 'default',
   headline: '전자서명, 쉽고 빠르게',
@@ -305,7 +366,6 @@ const DEFAULT_HERO: Variant = {
 const hero = ref<Variant>(DEFAULT_HERO)
 const abTestId = ref<string | null>(null)
 
-// headline을 하이라이트 분리 렌더링 (기본 variant 기준 "," 앞/뒤 분리)
 const heroHeadlineParts = computed(() => {
   const h = hero.value.headline
   const commaIdx = h.indexOf(',')
@@ -319,10 +379,6 @@ const heroHeadlineParts = computed(() => {
   }
 })
 
-/**
- * weight 기반 랜덤 variant 선택
- * weight 합산 후 누적 비율로 선택
- */
 function pickVariant(variants: Variant[]): Variant {
   const totalWeight = variants.reduce((sum, v) => sum + v.weight, 0)
   const rand = Math.random() * totalWeight
@@ -334,16 +390,11 @@ function pickVariant(variants: Variant[]): Variant {
   return variants[variants.length - 1]
 }
 
-/**
- * impression 기록 (fire-and-forget)
- */
 function recordImpression(testId: string, variantId: string, action: 'view' | 'click' | 'signup') {
   $fetch('/api/ab/impress', {
     method: 'POST',
     body: { testId, variantId, action },
-  }).catch(() => {
-    // impression 실패는 사용자 경험에 영향 없이 무시
-  })
+  }).catch(() => {})
 }
 
 function recordClick() {
@@ -361,7 +412,6 @@ onMounted(async () => {
 
     abTestId.value = landingHeroTest.id
 
-    // 쿠키에서 기존 variant 확인 (30일 유지)
     const cookieKey = `ab_variant_${landingHeroTest.id}`
     const savedVariantId = useCookie(cookieKey, {
       maxAge: 60 * 60 * 24 * 30,
@@ -371,22 +421,16 @@ onMounted(async () => {
     let selectedVariant: Variant
 
     if (savedVariantId.value) {
-      // 기존 쿠키에서 variant 복원
       const found = landingHeroTest.variants.find((v) => v.id === savedVariantId.value)
       selectedVariant = found ?? pickVariant(landingHeroTest.variants)
     } else {
-      // 신규 방문자: weight 기반 랜덤 선택 후 쿠키 저장
       selectedVariant = pickVariant(landingHeroTest.variants)
       savedVariantId.value = selectedVariant.id
     }
 
     hero.value = selectedVariant
-
-    // view impression 기록
     recordImpression(landingHeroTest.id, selectedVariant.id, 'view')
-  } catch {
-    // A/B 테스트 로드 실패 시 기본값 유지
-  }
+  } catch {}
 })
 
 useHead({ title: 'Pactery - 전자서명, 쉽고 빠르게' })
