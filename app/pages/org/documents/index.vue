@@ -4,20 +4,20 @@
       <h1 class="text-xl sm:text-2xl font-bold">문서함</h1>
       <button
         @click="showNewDoc = true"
-        class="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+        class="px-5 py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 text-sm font-medium shadow-sm shadow-brand-600/20 flex items-center gap-2"
       >
         + 새 문서
       </button>
     </div>
 
     <!-- Search & Filters -->
-    <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 mb-5">
+    <div class="bg-white rounded-2xl border border-gray-100 p-3 sm:p-4 mb-5">
       <div class="flex flex-wrap gap-2 sm:gap-3">
         <input
           v-model="search"
           type="text"
           placeholder="제목, 서명자 검색..."
-          class="flex-1 min-w-[150px] px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+          class="flex-1 min-w-[150px] px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 text-sm"
           @keyup.enter="handleSearch"
         />
         <select v-model="statusFilter" class="px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
@@ -35,13 +35,13 @@
     </div>
 
     <!-- Bulk Actions -->
-    <div v-if="selectedIds.length > 0" class="bg-blue-50 rounded-xl p-3 mb-4 flex items-center justify-between">
-      <span class="text-sm text-blue-800">{{ selectedIds.length }}건 선택</span>
+    <div v-if="selectedIds.length > 0" class="bg-brand-50 rounded-xl p-3 mb-4 flex items-center justify-between">
+      <span class="text-sm text-brand-800">{{ selectedIds.length }}건 선택</span>
       <div class="flex gap-2">
         <button
           @click="bulkDownload"
           :disabled="downloading"
-          class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
+          class="px-3 py-1.5 bg-brand-600 text-white rounded-xl text-sm hover:bg-brand-700 disabled:opacity-50"
         >
           {{ downloading ? '다운로드 중...' : '일괄 다운로드' }}
         </button>
@@ -52,7 +52,7 @@
     </div>
 
     <!-- Documents -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
       <div v-if="loading" class="text-center py-12 text-gray-400">불러오는 중...</div>
 
       <div v-else-if="documents.length === 0" class="text-center py-12 text-gray-400">
@@ -104,7 +104,7 @@
             <td class="px-4 py-3" @click.stop>
               <button
                 @click="handleDuplicate(doc.id)"
-                class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                class="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded transition"
                 title="복제"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@
             <div class="flex items-center gap-1 shrink-0">
               <button
                 @click.stop="handleDuplicate(doc.id)"
-                class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                class="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded transition"
                 title="복제"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +166,7 @@
           @click="page = p; loadDocuments()"
           :class="[
             'min-w-[40px] min-h-[40px] rounded text-sm flex items-center justify-center',
-            p === page ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200',
+            p === page ? 'bg-brand-600 text-white' : 'bg-gray-100 hover:bg-gray-200',
           ]"
         >
           {{ p }}
@@ -202,7 +202,7 @@
             <button type="button" @click="showNewDoc = false" class="flex-1 px-4 py-2.5 border rounded-lg text-sm hover:bg-gray-50">
               취소
             </button>
-            <button type="submit" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">
+            <button type="submit" class="flex-1 px-4 py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 text-sm font-medium">
               생성
             </button>
           </div>
@@ -356,7 +356,7 @@ function expiryClass(expiresAt: string): string {
 function statusClass(status: string) {
   const map: Record<string, string> = {
     draft: 'bg-gray-100 text-gray-700', pending: 'bg-yellow-100 text-yellow-800',
-    partially_signed: 'bg-blue-100 text-blue-800', completed: 'bg-green-100 text-green-800',
+    partially_signed: 'bg-brand-100 text-brand-800', completed: 'bg-green-100 text-green-800',
     rejected: 'bg-red-100 text-red-800', expired: 'bg-gray-100 text-gray-500',
   }
   return map[status] || 'bg-gray-100 text-gray-700'

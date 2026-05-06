@@ -9,6 +9,14 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css' },
+      ],
       script: [
         { innerHTML: 'if(location.search.includes("notrace")){localStorage.setItem("umami.disabled","1");document.title="\\u2713 추적제외";setTimeout(function(){window.close()},1200)}' },
         { src: 'https://api.lawfirmy.com/umami/script.js', defer: true, 'data-website-id': 'e7b5a3b3-0bf4-48b4-b358-4ea686428a1b' },
