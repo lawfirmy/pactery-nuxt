@@ -45,6 +45,15 @@
     "vue": "^3.5.0",
     "vue-router": "^4.5.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   }
