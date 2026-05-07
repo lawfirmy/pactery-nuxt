@@ -1,48 +1,15 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { v4 as uuidv4 } from 'uuid'
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
-
-const UPLOADS_DIR = path.join(process.cwd(), '.uploads')
-
-function useLocalStorage(): boolean {
-  const config = useRuntimeConfig()
-  return !config.s3Bucket
-}
-
-// ─── Local Storage ──────────────────────────────────
-
-async function localUpload(buffer: Buffer, _contentType: string, folder: string): Promise<string> {
-  const key = `${folder}/${uuidv4()}.pdf`
-  const filePath = path.join(UPLOADS_DIR, key)
-  await fs.mkdir(path.dirname(filePath), { recursive: true })
-  await fs.writeFile(filePath, buffer)
-  return key
-}
-
-async function localGetFile(key: string): Promise<Buffer> {
-  const filePath = path.join(UPLOADS_DIR, key)
-  try {
-    return await fs.readFile(filePath)
-  } catch (err: any) {
-    console.error(`[storage] File not found: ${filePath}`, err.message)
-    throw createError({ statusCode: 404, statusMessage: `File not found: ${key}` })
-  }
-}
-
-async function localDelete(key: string): Promise<void> {
-  const filePath = path.join(UPLOADS_DIR, key)
-  await fs.unlink(filePath).catch(() => {})
-}
-
-// ─── S3 Storage ─────────────────────────────────────
 
 let s3Client: S3Client | null = null
 
 function getS3Client(): S3Client {
   if (!s3Client) {
     const config = useRuntimeConfig()
+    if (!config.s3Bucket) {
+      throw createError({ statusCode: 500, statusMessage: 'S3_BUCKET is not configured' })
+    }
     s3Client = new S3Client({
       region: config.s3Region,
       credentials: {
@@ -54,20 +21,23 @@ function getS3Client(): S3Client {
   return s3Client
 }
 
-// ─── Public API ─────────────────────────────────────
+function getBucket(): string {
+  const config = useRuntimeConfig()
+  if (!config.s3Bucket) {
+    throw createError({ statusCode: 500, statusMessage: 'S3_BUCKET is not configured' })
+  }
+  return config.s3Bucket
+}
 
 export async function uploadFile(
   buffer: Buffer,
   contentType: string,
   folder: string = 'documents',
 ): Promise<string> {
-  if (useLocalStorage()) return localUpload(buffer, contentType, folder)
-
-  const config = useRuntimeConfig()
   const key = `${folder}/${uuidv4()}`
 
   await getS3Client().send(new PutObjectCommand({
-    Bucket: config.s3Bucket,
+    Bucket: getBucket(),
     Key: key,
     Body: buffer,
     ContentType: contentType,
@@ -78,14 +48,9 @@ export async function uploadFile(
 }
 
 export async function getFile(key: string): Promise<Buffer> {
-  const isLocal = useLocalStorage()
-  console.log(`[storage] getFile key=${key}, useLocal=${isLocal}, s3Bucket=${useRuntimeConfig().s3Bucket || '(empty)'}`)
-  if (isLocal) return localGetFile(key)
-
-  const config = useRuntimeConfig()
   try {
     const response = await getS3Client().send(new GetObjectCommand({
-      Bucket: config.s3Bucket,
+      Bucket: getBucket(),
       Key: key,
     }))
 
@@ -110,22 +75,16 @@ export async function getFile(key: string): Promise<Buffer> {
 }
 
 export async function getPresignedUrl(key: string, expiresIn = 3600): Promise<string> {
-  if (useLocalStorage()) return `/api/files/${key}`
-
-  const config = useRuntimeConfig()
   return getSignedUrl(
     getS3Client(),
-    new GetObjectCommand({ Bucket: config.s3Bucket, Key: key }),
+    new GetObjectCommand({ Bucket: getBucket(), Key: key }),
     { expiresIn },
   )
 }
 
 export async function deleteFile(key: string): Promise<void> {
-  if (useLocalStorage()) return localDelete(key)
-
-  const config = useRuntimeConfig()
   await getS3Client().send(new DeleteObjectCommand({
-    Bucket: config.s3Bucket,
+    Bucket: getBucket(),
     Key: key,
   }))
 }
