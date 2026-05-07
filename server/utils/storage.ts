@@ -1,6 +1,16 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { v4 as uuidv4 } from 'uuid'
+import { resolve, dirname } from 'path'
+import { readFile, writeFile, unlink, mkdir } from 'fs/promises'
+import { existsSync } from 'fs'
+
+const UPLOADS_DIR = resolve(process.cwd(), '.uploads')
+
+function isLocalMode(): boolean {
+  const config = useRuntimeConfig()
+  return !config.s3Bucket
+}
 
 let s3Client: S3Client | null = null
 
@@ -29,12 +39,24 @@ function getBucket(): string {
   return config.s3Bucket
 }
 
+function localPath(key: string): string {
+  return resolve(UPLOADS_DIR, key)
+}
+
 export async function uploadFile(
   buffer: Buffer,
   contentType: string,
   folder: string = 'documents',
 ): Promise<string> {
   const key = `${folder}/${uuidv4()}`
+
+  if (isLocalMode()) {
+    const filePath = localPath(key)
+    await mkdir(dirname(filePath), { recursive: true })
+    await writeFile(filePath, buffer)
+    console.log(`[Storage] Local upload: ${key} (${buffer.length} bytes)`)
+    return key
+  }
 
   await getS3Client().send(new PutObjectCommand({
     Bucket: getBucket(),
@@ -48,6 +70,14 @@ export async function uploadFile(
 }
 
 export async function getFile(key: string): Promise<Buffer> {
+  if (isLocalMode()) {
+    const filePath = localPath(key)
+    if (!existsSync(filePath)) {
+      throw createError({ statusCode: 404, statusMessage: `File not found: ${key}` })
+    }
+    return readFile(filePath)
+  }
+
   try {
     const response = await getS3Client().send(new GetObjectCommand({
       Bucket: getBucket(),
@@ -75,6 +105,11 @@ export async function getFile(key: string): Promise<Buffer> {
 }
 
 export async function getPresignedUrl(key: string, expiresIn = 3600): Promise<string> {
+  if (isLocalMode()) {
+    const config = useRuntimeConfig()
+    return `${config.public.appUrl}/api/files/${encodeURIComponent(key)}`
+  }
+
   return getSignedUrl(
     getS3Client(),
     new GetObjectCommand({ Bucket: getBucket(), Key: key }),
@@ -83,6 +118,14 @@ export async function getPresignedUrl(key: string, expiresIn = 3600): Promise<st
 }
 
 export async function deleteFile(key: string): Promise<void> {
+  if (isLocalMode()) {
+    const filePath = localPath(key)
+    if (existsSync(filePath)) {
+      await unlink(filePath)
+    }
+    return
+  }
+
   await getS3Client().send(new DeleteObjectCommand({
     Bucket: getBucket(),
     Key: key,
