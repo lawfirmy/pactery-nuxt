@@ -5,7 +5,7 @@ import { prisma } from '~~/server/utils/db'
  * A/B 테스트 삭제 (cascade로 impressions도 삭제됨) (인증 필요)
  */
 export default defineEventHandler(async (event) => {
-  requireAuth(event)
+  requireAdmin(event)
 
   const id = getRouterParam(event, 'id')
   if (!id) {

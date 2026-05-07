@@ -15,8 +15,8 @@ export async function sendEmail(params: EmailParams) {
 
   console.log(`[EMAIL] Sending to: ${params.to} | Subject: ${params.subject} | From: ${config.resendFromEmail}`)
 
-  if (!config.resendApiKey || process.env.NODE_ENV === 'development') {
-    console.log(`[EMAIL] DEV MODE - not actually sending. API key present: ${!!config.resendApiKey}`)
+  if (!config.resendApiKey) {
+    console.log(`[EMAIL] No API key configured - skipping send.`)
     console.log(`[EMAIL] Body preview: ${params.html.substring(0, 200)}...`)
     return { messageId: 'dev-' + Date.now() }
   }

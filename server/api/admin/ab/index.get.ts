@@ -27,7 +27,7 @@ interface AbTestWithStats {
  * 전체 A/B 테스트 + 통계 (인증 필요)
  */
 export default defineEventHandler(async (event): Promise<AbTestWithStats[]> => {
-  requireAuth(event)
+  requireAdmin(event)
 
   const tests = await prisma.abTest.findMany({
     orderBy: { createdAt: 'desc' },

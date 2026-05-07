@@ -20,7 +20,7 @@ const bodySchema = z.object({
  * A/B 테스트 수정 (variants, isActive) (인증 필요)
  */
 export default defineEventHandler(async (event) => {
-  requireAuth(event)
+  requireAdmin(event)
 
   const id = getRouterParam(event, 'id')
   if (!id) {

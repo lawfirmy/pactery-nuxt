@@ -54,10 +54,14 @@ export default defineEventHandler(async (event) => {
     },
   })
 
-  // Send email notifications to signers (fire-and-forget)
-  sendSignRequestNotifications(docId).catch((err) => {
+  // Send email notifications to signers
+  let emailError: string | null = null
+  try {
+    await sendSignRequestNotifications(docId)
+  } catch (err: any) {
+    emailError = err?.message || 'Email notification failed'
     console.error(`Failed to send sign request notifications for doc ${docId}:`, err)
-  })
+  }
 
-  return updated
+  return { ...updated, emailError }
 })
