@@ -42,3 +42,12 @@ server/utils/           # db, jwt, crypto, rbac, audit, storage, pdf
 - CI/CD: `.github/workflows/deploy.yml` → GHCR → EC2
 - 이미지: `ghcr.io/lawfirmy/pactery:latest`
 - EC2 env-file: `/home/ec2-user/servers/pactery/.env`
+
+## 환경변수 주의사항
+
+**NUXT_ 접두사 필수 (프로덕션)**: `nuxt.config.ts`의 `runtimeConfig`는 빌드타임에 `process.env.*`를 평가.
+Docker 빌드 시 없는 변수는 빈값으로 bake됨. 런타임에서 오버라이드하려면 반드시 `NUXT_` 접두사 사용.
+- `resendApiKey` → `NUXT_RESEND_API_KEY`
+- `s3Bucket` → `NUXT_S3_BUCKET`
+- `public.appUrl` → `NUXT_PUBLIC_APP_URL`
+- 로컬 개발에서는 접두사 없이도 작동 (`nuxt dev`가 실시간 평가)
