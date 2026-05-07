@@ -31,10 +31,13 @@ export default defineEventHandler(async (event) => {
     metadata: { signerEmail: signRequest.signerEmail, type: 'individual' },
   })
 
-  // Send email notification (fire-and-forget)
-  sendIndividualSignRequest(signRequestId).catch((err) => {
+  // Send email notification
+  try {
+    await sendIndividualSignRequest(signRequestId)
+  } catch (err) {
     console.error(`Failed to send individual sign request email to ${signRequest.signerEmail}:`, err)
-  })
+    throw createError({ statusCode: 502, statusMessage: '이메일 발송에 실패했습니다' })
+  }
 
   return { success: true }
 })
