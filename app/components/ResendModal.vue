@@ -106,18 +106,30 @@
           type="tel"
           placeholder="010-0000-0000"
           class="w-full text-sm px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mb-3"
-          @keyup.enter="handleSend"
+          @keyup.enter="selectedMethod !== 'phone' && handleSend()"
         />
         <div class="flex justify-end gap-2">
           <button @click="selectedMethod = null" class="text-sm px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
             뒤로
           </button>
+          <a
+            v-if="selectedMethod === 'phone' && isPhoneValid"
+            :href="'tel:' + inputPhone.replace(/[^0-9]/g, '')"
+            @click="savePhoneAndClose"
+            class="text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 inline-block text-center"
+          >
+            이 번호로 전화 걸기
+          </a>
           <button
+            v-else
             @click="handleSend"
             :disabled="!isPhoneValid || sending"
-            class="text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+            :class="[
+              'text-sm px-4 py-2 text-white rounded-lg disabled:opacity-50',
+              selectedMethod === 'kakao' ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'
+            ]"
           >
-            {{ sending ? '발송 중...' : '이 번호로 문자 보내기' }}
+            {{ sending ? '발송 중...' : phoneInputButtonLabel }}
           </button>
         </div>
       </div>
@@ -234,9 +246,27 @@ const isPhoneValid = computed(() => inputPhone.value.replace(/[^0-9]/g, '').leng
 const needsPhoneInput = computed(() =>
   (selectedMethod.value === 'sms' || selectedMethod.value === 'kakao' || selectedMethod.value === 'phone') && !props.signer.signerPhone
 )
+const phoneInputButtonLabel = computed(() => {
+  if (selectedMethod.value === 'kakao') return '이 번호로 카카오톡 보내기'
+  return '이 번호로 문자 보내기'
+})
 
 function selectMethod(method: string) {
   selectedMethod.value = method
+}
+
+async function savePhoneAndClose() {
+  // Save the phone number to the signer record via API, then close
+  try {
+    await orgFetch(`/documents/${props.docId}/signers/${props.signer.id}/resend`, {
+      method: 'POST',
+      body: { method: 'phone', phone: inputPhone.value.replace(/[^0-9]/g, '') },
+    })
+  } catch {
+    // Phone call initiated regardless; saving phone is best-effort
+  }
+  emit('sent', 'phone')
+  emit('close')
 }
 
 async function handleSend() {
@@ -256,9 +286,24 @@ async function handleSend() {
       if (phone) payload.phone = phone
     }
 
-    await orgFetch(`/documents/${props.docId}/signers/${props.signer.id}/resend`, {
+    const resendUrl = `/documents/${props.docId}/signers/${props.signer.id}/resend`
+    console.info('[ResendModal] resend request start', {
+      url: resendUrl,
+      signerId: props.signer.id,
+      docId: props.docId,
+      method: selectedMethod.value,
+      payload,
+    })
+
+    const response = await orgFetch(resendUrl, {
       method: 'POST',
       body: payload,
+    })
+    console.info('[ResendModal] resend request success', {
+      url: resendUrl,
+      signerId: props.signer.id,
+      method: selectedMethod.value,
+      response,
     })
 
     const methodLabels: Record<string, string> = { email: '메일', sms: '문자', kakao: '카카오톡', phone: '전화' }
@@ -266,6 +311,14 @@ async function handleSend() {
     emit('sent', selectedMethod.value!)
     emit('close')
   } catch (e: any) {
+    console.error('[ResendModal] resend request failed', {
+      signerId: props.signer.id,
+      docId: props.docId,
+      method: selectedMethod.value,
+      error: e,
+      statusCode: e?.statusCode,
+      statusMessage: e?.data?.statusMessage,
+    })
     toast.error(e.data?.statusMessage || '발송에 실패했습니다')
   } finally {
     sending.value = false

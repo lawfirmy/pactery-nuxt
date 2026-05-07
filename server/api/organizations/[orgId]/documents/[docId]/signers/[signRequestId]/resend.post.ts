@@ -92,20 +92,27 @@ export default defineEventHandler(async (event) => {
     const orgName = (await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } }))?.name || 'Pactery'
     const smsContent = `[${orgName}] ${document.title} 서명을 요청합니다.\n${signUrl}`
 
-    sendSms({ to: targetPhone, content: smsContent }).catch((err) => {
-      console.error(`Failed to send SMS to ${targetPhone}:`, err)
-    })
-  } else if (body.method === 'kakao' || body.method === 'phone') {
-    // Placeholder - not yet implemented
+    console.log(`[RESEND] SMS 발송 시작 → targetPhone=${targetPhone}, signRequestId=${signRequestId}`)
+    try {
+      await sendSms({ to: targetPhone, content: smsContent })
+      console.log(`[RESEND] SMS 발송 완료 → ${targetPhone}`)
+    } catch (err: any) {
+      console.error(`[RESEND] SMS 발송 실패 → ${targetPhone}:`, err)
+      throw createError({ statusCode: 502, statusMessage: err?.message || 'SMS 발송에 실패했습니다' })
+    }
+  } else if (body.method === 'phone') {
+    // Phone calls are handled client-side via tel: link
+    // Server only saves the updated phone number (already done above)
     await createAuditLog(event, {
       documentId: docId,
       signRequestId,
       eventType: 'sent',
       actorType: 'user',
       actorId: auth.userId,
-      metadata: { type: `resend_${body.method}`, note: 'not_yet_implemented' },
+      metadata: { type: 'resend_phone', signerPhone: body.phone || signRequest.signerPhone },
     })
-    throw createError({ statusCode: 501, statusMessage: `${body.method === 'kakao' ? '카카오톡' : '전화'} 발송은 준비 중입니다` })
+  } else if (body.method === 'kakao') {
+    throw createError({ statusCode: 501, statusMessage: '카카오톡 발송은 준비 중입니다' })
   }
 
   console.log(`[RESEND] === 서명 재요청 응답 반환 (method=${body.method}) ===`)
