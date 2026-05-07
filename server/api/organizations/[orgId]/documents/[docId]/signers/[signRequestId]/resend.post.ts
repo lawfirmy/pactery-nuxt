@@ -68,11 +68,11 @@ export default defineEventHandler(async (event) => {
 
     console.log(`[RESEND] 이메일 발송 시작 → targetEmail=${targetEmail}, signRequestId=${signRequestId}`)
     try {
-      await sendIndividualSignRequest(signRequestId)
-      console.log(`[RESEND] 이메일 발송 완료 → ${targetEmail}`)
-    } catch (err) {
+      const result = await sendIndividualSignRequest(signRequestId)
+      console.log(`[RESEND] 이메일 발송 완료 → ${targetEmail}, messageId=${result?.messageId}`)
+    } catch (err: any) {
       console.error(`[RESEND] 이메일 발송 실패 → ${targetEmail}:`, err)
-      throw createError({ statusCode: 502, statusMessage: '이메일 발송에 실패했습니다' })
+      throw createError({ statusCode: 502, statusMessage: err?.message || '이메일 발송에 실패했습니다' })
     }
   } else if (body.method === 'sms') {
     const targetPhone = body.phone || signRequest.signerPhone

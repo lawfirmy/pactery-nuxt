@@ -62,7 +62,7 @@ export async function sendIndividualSignRequest(signRequestId: string) {
 
   if (!sr || sr.status !== 'pending') {
     console.log(`[NOTIFY] SignRequest not found or not pending. Found: ${!!sr}, status: ${sr?.status}`)
-    return
+    throw new Error(`SignRequest ${signRequestId} not found or not pending (status: ${sr?.status})`)
   }
 
   console.log(`[NOTIFY] Sending email to: ${sr.signerEmail}, signer: ${sr.signerName}, doc: ${sr.document.title}`)
@@ -78,11 +78,14 @@ export async function sendIndividualSignRequest(signRequestId: string) {
     orgLogoUrl: sr.document.org.logoUrl || undefined,
   })
 
-  await sendEmail({
+  const result = await sendEmail({
     to: sr.signerEmail,
     subject: `[서명 요청] ${sr.document.title} - ${sr.document.org.name}`,
     html,
   })
+
+  console.log(`[NOTIFY] Email sent to ${sr.signerEmail}, messageId: ${result.messageId}`)
+  return result
 }
 
 /** Send reminder email to a single signer */

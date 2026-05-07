@@ -16,16 +16,15 @@ export async function sendEmail(params: EmailParams) {
   console.log(`[EMAIL] Sending to: ${params.to} | Subject: ${params.subject} | From: ${config.resendFromEmail}`)
 
   if (!config.resendApiKey) {
-    console.log(`[EMAIL] No API key configured - skipping send.`)
-    console.log(`[EMAIL] Body preview: ${params.html.substring(0, 200)}...`)
-    return { messageId: 'dev-' + Date.now() }
+    console.warn(`[EMAIL] ⚠ RESEND_API_KEY 미설정 — 이메일 발송 건너뜀 (to: ${params.to}, subject: ${params.subject})`)
+    return { messageId: 'dev-skip-' + Date.now() }
   }
 
   try {
     const { Resend } = await import('resend')
     const resend = new Resend(config.resendApiKey)
 
-    console.log(`[EMAIL] Calling Resend API...`)
+    console.log(`[EMAIL] Calling Resend API with from=${config.resendFromEmail}, to=${params.to}...`)
     const result = await resend.emails.send({
       from: config.resendFromEmail,
       to: [params.to],
