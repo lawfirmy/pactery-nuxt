@@ -106,7 +106,9 @@ export const useOrganization = () => {
     if (!res.ok) {
       const errText = await res.text().catch(() => '')
       console.error(`[fetchPdfBuffer] status=${res.status}, body=${errText}`)
-      throw new Error(`PDF fetch failed: ${res.status} — ${errText}`)
+      const err = new Error(`PDF fetch failed: ${res.status} — ${errText}`) as any
+      err.statusCode = res.status
+      throw err
     }
     return res.arrayBuffer()
   }

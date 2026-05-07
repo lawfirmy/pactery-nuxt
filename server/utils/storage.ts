@@ -83,20 +83,30 @@ export async function getFile(key: string): Promise<Buffer> {
   if (isLocal) return localGetFile(key)
 
   const config = useRuntimeConfig()
-  const response = await getS3Client().send(new GetObjectCommand({
-    Bucket: config.s3Bucket,
-    Key: key,
-  }))
+  try {
+    const response = await getS3Client().send(new GetObjectCommand({
+      Bucket: config.s3Bucket,
+      Key: key,
+    }))
 
-  const stream = response.Body as ReadableStream
-  const chunks: Uint8Array[] = []
-  const reader = stream.getReader()
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    chunks.push(value)
+    const stream = response.Body as ReadableStream
+    const chunks: Uint8Array[] = []
+    const reader = stream.getReader()
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+    }
+    return Buffer.concat(chunks)
+  } catch (err: any) {
+    if (err.name === 'NoSuchKey' || err.Code === 'NoSuchKey') {
+      throw createError({ statusCode: 404, statusMessage: `File not found: ${key}` })
+    }
+    if (err.name === 'NoSuchBucket' || err.Code === 'NoSuchBucket') {
+      throw createError({ statusCode: 404, statusMessage: 'Storage bucket not found' })
+    }
+    throw err
   }
-  return Buffer.concat(chunks)
 }
 
 export async function getPresignedUrl(key: string, expiresIn = 3600): Promise<string> {
