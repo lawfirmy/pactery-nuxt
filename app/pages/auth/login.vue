@@ -44,7 +44,7 @@
           v-model="form.email"
           type="email"
           required
-          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-sm transition"
           placeholder="name@company.com"
         />
       </div>
@@ -55,7 +55,7 @@
           v-model="form.password"
           type="password"
           required
-          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-sm transition"
           placeholder="8자 이상"
         />
       </div>
@@ -65,7 +65,7 @@
       <button
         type="submit"
         :disabled="loading"
-        class="w-full py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-50 transition font-medium text-sm"
+        class="w-full py-2.5 bg-brand-800 text-white rounded-xl hover:bg-brand-900 disabled:opacity-50 transition font-medium text-sm"
       >
         {{ loading ? '로그인 중...' : '로그인' }}
       </button>
@@ -73,7 +73,7 @@
 
     <p class="mt-8 text-center text-sm text-gray-500">
       계정이 없으신가요?
-      <NuxtLink to="/auth/register" class="text-brand-600 hover:text-brand-500 font-semibold">회원가입</NuxtLink>
+      <NuxtLink to="/auth/register" class="text-brand-700 hover:text-brand-600 font-semibold">회원가입</NuxtLink>
     </p>
   </div>
 </template>

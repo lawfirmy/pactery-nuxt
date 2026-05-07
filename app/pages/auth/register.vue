@@ -10,7 +10,7 @@
           v-model="form.name"
           type="text"
           required
-          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-sm transition"
           placeholder="홍길동"
         />
       </div>
@@ -21,7 +21,7 @@
           v-model="form.email"
           type="email"
           required
-          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-sm transition"
           placeholder="name@company.com"
         />
       </div>
@@ -33,7 +33,7 @@
           type="password"
           required
           minlength="8"
-          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-sm transition"
           placeholder="8자 이상"
         />
       </div>
@@ -43,7 +43,7 @@
         <input
           v-model="form.phone"
           type="tel"
-          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition"
+          class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-sm transition"
           placeholder="010-1234-5678"
         />
       </div>
@@ -53,7 +53,7 @@
       <button
         type="submit"
         :disabled="loading"
-        class="w-full py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-50 transition font-medium text-sm"
+        class="w-full py-2.5 bg-brand-800 text-white rounded-xl hover:bg-brand-900 disabled:opacity-50 transition font-medium text-sm"
       >
         {{ loading ? '가입 중...' : '무료로 시작하기' }}
       </button>
@@ -65,7 +65,7 @@
 
     <p class="mt-4 text-center text-sm text-gray-500">
       이미 계정이 있으신가요?
-      <NuxtLink to="/auth/login" class="text-brand-600 hover:text-brand-500 font-semibold">로그인</NuxtLink>
+      <NuxtLink to="/auth/login" class="text-brand-700 hover:text-brand-600 font-semibold">로그인</NuxtLink>
     </p>
   </div>
 </template>

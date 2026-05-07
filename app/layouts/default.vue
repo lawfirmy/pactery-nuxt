@@ -4,19 +4,19 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center gap-8">
-            <NuxtLink to="/" class="text-xl font-bold text-brand-600 shrink-0">Pactery</NuxtLink>
+            <NuxtLink to="/" class="text-xl font-bold text-brand-900 shrink-0 tracking-tight">Pactery</NuxtLink>
             <div class="hidden md:flex items-center gap-1">
               <template v-if="isLoggedIn">
                 <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to"
                   class="px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-                  :class="isActive(item.to) ? 'text-brand-700 bg-brand-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                  :class="isActive(item.to) ? 'text-brand-900 bg-brand-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
                 >
                   {{ item.label }}
                 </NuxtLink>
               </template>
               <NuxtLink to="/blog"
                 class="px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-                :class="isActive('/blog') ? 'text-brand-700 bg-brand-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                :class="isActive('/blog') ? 'text-brand-900 bg-brand-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
               >
                 블로그
               </NuxtLink>
@@ -40,7 +40,7 @@
             <template v-else>
               <div class="hidden md:flex items-center gap-2">
                 <NuxtLink to="/auth/login" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium rounded-lg transition">로그인</NuxtLink>
-                <NuxtLink to="/auth/register" class="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-xl hover:bg-brand-700 transition shadow-sm">
+                <NuxtLink to="/auth/register" class="px-4 py-2 bg-brand-800 text-white text-sm font-medium rounded-xl hover:bg-brand-900 transition shadow-sm">
                   시작하기
                 </NuxtLink>
               </div>
@@ -69,7 +69,7 @@
             <template v-if="isLoggedIn">
               <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to"
                 class="block px-3 py-2.5 text-sm rounded-lg transition-colors"
-                :class="isActive(item.to) ? 'text-brand-700 bg-brand-50 font-medium' : 'text-gray-700 hover:bg-gray-50'"
+                :class="isActive(item.to) ? 'text-brand-900 bg-brand-50 font-medium' : 'text-gray-700 hover:bg-gray-50'"
                 @click="mobileMenu = false"
               >
                 {{ item.label }}

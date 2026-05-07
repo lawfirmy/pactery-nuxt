@@ -1,8 +1,10 @@
 <template>
   <div>
     <!-- Hero -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800">
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE4YzAtOS45NC04LjA2LTE4LTE4LTE4UzAgOC4wNiAwIDE4IDE4IDM2IDE4IDM2IDI4LjA2IDM2IDM2IDE4eiIvPjwvZz48L2c+PC9zdmc+')] opacity-40"></div>
+    <section class="relative overflow-hidden bg-brand-900">
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-950/50 to-transparent"></div>
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-700/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+      <div class="absolute bottom-0 left-0 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"></div>
       <div class="relative max-w-7xl mx-auto px-4 py-20 sm:py-28 lg:py-36 sm:px-6 lg:px-8">
         <div class="text-center max-w-4xl mx-auto">
           <div v-if="hero.badge" class="mb-6 inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
@@ -12,7 +14,7 @@
 
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
             {{ heroHeadlineParts.prefix
-            }}<span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-indigo-300">{{ heroHeadlineParts.highlight }}</span>{{ heroHeadlineParts.suffix }}
+            }}<span class="text-brand-200">{{ heroHeadlineParts.highlight }}</span>{{ heroHeadlineParts.suffix }}
           </h1>
           <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-brand-200/80 leading-relaxed">
             {{ hero.subtext }}
@@ -92,14 +94,14 @@
     <section class="bg-white py-20 sm:py-24">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-3">Features</p>
+          <p class="text-sm font-semibold text-brand-700 uppercase tracking-wider mb-3">Features</p>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">왜 Pactery인가?</h2>
           <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">변호사와 법률사무소를 위해 설계된 전자서명 솔루션</p>
         </div>
         <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
           <div class="group bg-gray-50 hover:bg-brand-50 p-8 rounded-2xl transition-colors duration-200">
             <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-brand-200 transition-colors">
-              <svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+              <svg class="w-6 h-6 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
             </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">3초 검색</h3>
             <p class="text-gray-500 leading-relaxed">모든 계약서를 제목, 서명자, 사건번호로 즉시 검색. 더 이상 헤매지 마세요.</p>
@@ -126,22 +128,22 @@
     <section class="bg-gray-50 py-20 sm:py-24">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-3">How it works</p>
+          <p class="text-sm font-semibold text-brand-700 uppercase tracking-wider mb-3">How it works</p>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">3분이면 서명 완료</h2>
         </div>
         <div class="grid sm:grid-cols-3 gap-8 sm:gap-12">
           <div class="text-center">
-            <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-600/30">1</div>
+            <div class="w-14 h-14 bg-brand-800 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-800/30">1</div>
             <h3 class="font-semibold text-gray-900 mb-2">문서 업로드</h3>
             <p class="text-sm text-gray-500">PDF를 업로드하고 서명 위치를 지정하세요.</p>
           </div>
           <div class="text-center">
-            <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-600/30">2</div>
+            <div class="w-14 h-14 bg-brand-800 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-800/30">2</div>
             <h3 class="font-semibold text-gray-900 mb-2">서명자 초대</h3>
             <p class="text-sm text-gray-500">이메일 또는 카카오톡으로 서명 요청을 보내세요.</p>
           </div>
           <div class="text-center">
-            <div class="w-14 h-14 bg-brand-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-600/30">3</div>
+            <div class="w-14 h-14 bg-brand-800 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-xl font-bold shadow-lg shadow-brand-800/30">3</div>
             <h3 class="font-semibold text-gray-900 mb-2">서명 완료</h3>
             <p class="text-sm text-gray-500">감사추적인증서와 함께 서명 완료된 문서를 받으세요.</p>
           </div>
@@ -153,7 +155,7 @@
     <section class="bg-white py-20 sm:py-24">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <p class="text-sm font-semibold text-brand-600 uppercase tracking-wider mb-3">Pricing</p>
+          <p class="text-sm font-semibold text-brand-700 uppercase tracking-wider mb-3">Pricing</p>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">업계 최저가, 기능은 최고</h2>
           <p class="mt-4 text-lg text-gray-500">타사 대비 최대 80% 저렴합니다. 추가 건당 990원.</p>
         </div>
@@ -174,7 +176,7 @@
             </NuxtLink>
           </div>
           <!-- Starter -->
-          <div class="relative bg-brand-600 text-white rounded-2xl p-7 shadow-xl shadow-brand-600/20 ring-2 ring-brand-600">
+          <div class="relative bg-brand-800 text-white rounded-2xl p-7 shadow-xl shadow-brand-800/20 ring-2 ring-brand-800">
             <span class="absolute -top-3 left-6 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">인기</span>
             <h3 class="font-semibold text-lg">Starter</h3>
             <p class="text-4xl font-bold mt-3">19,900<span class="text-base font-normal text-brand-200">원/월</span></p>
@@ -234,7 +236,7 @@
               </div>
               <div class="text-right">
                 <p class="text-gray-400 line-through text-sm">55,000원/월</p>
-                <p class="text-brand-600 font-bold">19,900원/월 <span class="text-xs text-green-600">(50건, 5명)</span></p>
+                <p class="text-brand-800 font-bold">19,900원/월 <span class="text-xs text-green-600">(50건, 5명)</span></p>
               </div>
             </div>
             <div class="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
@@ -244,7 +246,7 @@
               </div>
               <div class="text-right">
                 <p class="text-gray-400 line-through text-sm">88,000원/월</p>
-                <p class="text-brand-600 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
+                <p class="text-brand-800 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
               </div>
             </div>
             <div class="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
@@ -254,7 +256,7 @@
               </div>
               <div class="text-right">
                 <p class="text-gray-400 line-through text-sm">40,000원/월</p>
-                <p class="text-brand-600 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
+                <p class="text-brand-800 font-bold">39,900원/월 <span class="text-xs text-green-600">(200건, 15명)</span></p>
               </div>
             </div>
           </div>
@@ -272,7 +274,7 @@
               <tr class="border-b-2 border-gray-100">
                 <th class="text-left py-4 px-5 font-semibold text-gray-700">기능</th>
                 <th class="text-center py-4 px-3 font-semibold text-gray-700 w-24">Free</th>
-                <th class="text-center py-4 px-3 font-semibold text-brand-600 w-24 bg-brand-50/50">Starter</th>
+                <th class="text-center py-4 px-3 font-semibold text-brand-800 w-24 bg-brand-50/50">Starter</th>
                 <th class="text-center py-4 px-3 font-semibold text-gray-700 w-24">Business</th>
                 <th class="text-center py-4 px-3 font-semibold text-gray-700 w-24">Enterprise</th>
               </tr>
@@ -306,11 +308,11 @@
     </section>
 
     <!-- CTA -->
-    <section class="bg-brand-600 py-16 sm:py-20">
+    <section class="bg-brand-900 py-16 sm:py-20">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-2xl sm:text-3xl font-bold text-white">지금 바로 시작하세요</h2>
-        <p class="mt-4 text-brand-200 text-lg">30초 만에 가입하고, 첫 서명을 보내보세요.</p>
-        <NuxtLink to="/auth/register" class="mt-8 inline-block px-8 py-3.5 bg-white text-brand-700 font-semibold rounded-xl hover:bg-brand-50 transition shadow-lg shadow-brand-700/20">
+        <p class="mt-4 text-brand-300 text-lg">30초 만에 가입하고, 첫 서명을 보내보세요.</p>
+        <NuxtLink to="/auth/register" class="mt-8 inline-block px-8 py-3.5 bg-white text-brand-900 font-semibold rounded-xl hover:bg-brand-50 transition shadow-lg shadow-white/10">
           무료로 시작하기
         </NuxtLink>
       </div>
